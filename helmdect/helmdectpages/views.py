@@ -10,14 +10,14 @@ def login(request):
 def home(request):
     return render(request, 'helmdectpages/home.html')
 
-def reportHistory(request):
-    return render(request, 'helmdectpages/reportHistory.html')
+def report_history(request):
+    return render(request, 'helmdectpages/report_history.html')
 
-def dataVisualization(request):
-    return render(request, 'helmdectpages/dataVisualization.html')
+def data_visualization(request):
+    return render(request, 'helmdectpages/data_visualization.html')
 
-def detailedReports(request):
-    return render(request, 'helmdectpages/detailedReports.html')
+def detailed_reports(request):
+    return render(request, 'helmdectpages/detailed_reports.html')
 
 def settings(request):
     return render(request, 'helmdectpages/settings.html')
