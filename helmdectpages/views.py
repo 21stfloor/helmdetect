@@ -60,7 +60,8 @@ def report_history(request):
         "plate_number": "1234",
         "helmet": "Yes",
         "object_detected": "No",
-        "person_detected": "Yes"
+        "person_detected": "Yes",
+        "image": "https://firebasestorage.googleapis.com/v0/b/helmdetect.appspot.com/o/sample%20image.png?alt=media&token=9933e2d0-eaf1-4db3-954c-968e187fe168"
     }
 
     for field, value in report_fields.items():
@@ -71,6 +72,7 @@ def report_history(request):
         'helmet': get_database_value("reports/helmet"),
         'object_detected': get_database_value("reports/object_detected"),
         'person_detected': get_database_value("reports/person_detected"),
+        'image': get_database_value("reports/image")
     }
 
     return render(request, 'helmdectpages/report_history.html', report_data)
