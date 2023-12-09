@@ -1,19 +1,6 @@
 {% extends "helmdectpages/base.html" %}
 
 {% block content %}
-    <nav class="navbar navbar-expand-md fixed-top navbar-shrink py-3 navbar-light" id="mainNav">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span>HelmDect</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'helmdectpages:home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:report_history' %}">Report History</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:data_visualization' %}">Data Visualization</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:detailed_reports' %}">Detailed Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:settings' %}">Settings</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
     <section class="py-5 mt-5">
         <form class="d-flex justify-content-center flex-wrap" method="post" data-bs-theme="light" style="margin-left: initial;">
             <div class="shadow-lg mb-3"><input class="form-control" type="email" name="search" placeholder="Search"></div>

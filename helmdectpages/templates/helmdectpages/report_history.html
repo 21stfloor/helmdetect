@@ -1,19 +1,6 @@
 {% extends "helmdectpages/base.html" %}
 
 {% block content %}
-    <nav class="navbar navbar-expand-md fixed-top navbar-shrink py-3 navbar-light" id="mainNav">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span>HelmDect</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navcol-1">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'helmdectpages:home' %}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:report_history' %}">Report History</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:data_visualization' %}">Data Visualization</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:detailed_reports' %}">Detailed Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:settings' %}">Settings</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
     <section class="py-5 mt-5">
         <form class="d-flex justify-content-center flex-wrap" method="post" data-bs-theme="light" style="margin-left: initial;">
             <div class="shadow-lg mb-3"><input class="form-control" type="email" name="search" placeholder="Search"></div>
@@ -27,145 +14,63 @@
                     <h3 class="display-6 fw-bold pb-4 mb-4">Reports:&nbsp;<span class="underline">Captured Photos</span></h3>
                 </div>
             </div>
-            <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
-                <div class="col d-flex justify-content-between flex-xl-column">
-                    <div class="card border-light border-1 d-flex flex-grow-1 justify-content-center p-2 me-3 me-xl-0 mb-xl-4">
-                        <div class="card-body">
-                            <div class="bs-icon-md bs-icon-rounded bs-icon-secondary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-4 bs-icon">
-                                <img src="{{ image }}" alt="Image" width="100%" height="100%">    
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="fw-bold mb-0">Plate Number: {{ plate_number }}</h4><a class="fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <line x1="15" y1="16" x2="19" y2="12"></line>
-                                        <line x1="15"    y1="8" x2="19" y2="12"></line>
-                                    </svg></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card border-light border-1 d-flex flex-grow-1 justify-content-center p-2">
-                        <div class="card-body">
-                            <div class="bs-icon-md bs-icon-rounded bs-icon-secondary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-4 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-image">
-                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"></path>
-                                </svg></div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="fw-bold mb-0">Object Detected: {{ object_detected }}</h4><a class="fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
+            <div id="lightGallery" class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
+
+                {% for key, value in reports.items %}
+                <div class="card border-light border-1" data-key="{{key}}">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <img src="data:image/png;base64, {{ value.image }}" alt="Image" class="img-fluid mb-4">
+                                <h4 class="fw-bold mb-0">Plate Number: {{ value.plate_number }}</h4>
+                                <a href="#" class="fw-bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
                                         <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                         <line x1="5" y1="12" x2="19" y2="12"></line>
                                         <line x1="15" y1="16" x2="19" y2="12"></line>
                                         <line x1="15" y1="8" x2="19" y2="12"></line>
-                                    </svg></a>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <h4 class="fw-bold mb-0">Object Detected: {{ value.object_detected }}</h4>
+                                <a href="#" class="fw-bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <line x1="15" y1="16" x2="19" y2="12"></line>
+                                        <line x1="15" y1="8" x2="19" y2="12"></line>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <h4 class="fw-bold mb-0">Helmet: {{ value.helmet }}</h4>
+                                <a href="#" class="fw-bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <line x1="15" y1="16" x2="19" y2="12"></line>
+                                        <line x1="15" y1="8" x2="19" y2="12"></line>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <h4 class="fw-bold mb-0">Person Detected: {{ value.person_detected }}</h4>
+                                <a href="#" class="fw-bold">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <line x1="15" y1="16" x2="19" y2="12"></line>
+                                        <line x1="15" y1="8" x2="19" y2="12"></line>
+                                    </svg>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col d-flex justify-content-between flex-xl-column">
-                    <div class="card border-light border-1 d-flex flex-grow-1 justify-content-center p-2 me-3 me-xl-0 mb-xl-4">
-                        <div class="card-body">
-                            <div class="bs-icon-md bs-icon-rounded bs-icon-secondary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-4 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-image">
-                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"></path>
-                                </svg></div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="fw-bold mb-0">Helmet: {{ helmet }}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</h4><a class="fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <line x1="15" y1="16" x2="19" y2="12"></line>
-                                        <line x1="15" y1="8" x2="19" y2="12"></line>
-                                    </svg></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card border-light border-1 d-flex flex-grow-1 justify-content-center p-2">
-                        <div class="card-body">
-                            <div class="bs-icon-md bs-icon-rounded bs-icon-secondary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-4 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-image">
-                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"></path>
-                                </svg></div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="fw-bold mb-0">Person Detected: {{ person_detected }}</h4><a class="fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <line x1="15" y1="16" x2="19" y2="12"></line>
-                                        <line x1="15" y1="8" x2="19" y2="12"></line>
-                                    </svg></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
-            <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
-                <div class="col d-flex justify-content-between flex-xl-column">
-                    <div class="card border-light border-1 d-flex flex-grow-1 justify-content-center p-2 me-3 me-xl-0 mb-xl-4">
-                        <div class="card-body">
-                            <div class="bs-icon-md bs-icon-rounded bs-icon-secondary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-4 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-image">
-                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"></path>
-                                </svg></div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="fw-bold mb-0">Plate Number: {{ plate_number }}</h4><a class="fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <line x1="15" y1="16" x2="19" y2="12"></line>
-                                        <line x1="15" y1="8" x2="19" y2="12"></line>
-                                    </svg></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card border-light border-1 d-flex flex-grow-1 justify-content-center p-2">
-                        <div class="card-body">
-                            <div class="bs-icon-md bs-icon-rounded bs-icon-secondary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-4 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-image">
-                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"></path>
-                                </svg></div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="fw-bold mb-0">Object Detected: {{ object_detected }}</h4><a class="fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <line x1="15" y1="16" x2="19" y2="12"></line>
-                                        <line x1="15" y1="8" x2="19" y2="12"></line>
-                                    </svg></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col d-flex justify-content-between flex-xl-column">
-                    <div class="card border-light border-1 d-flex flex-grow-1 justify-content-center p-2 me-3 me-xl-0 mb-xl-4">
-                        <div class="card-body">
-                            <div class="bs-icon-md bs-icon-rounded bs-icon-secondary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-4 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-image">
-                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"></path>
-                                </svg></div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="fw-bold mb-0">Helmet: {{ helmet }}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</h4><a class="fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <line x1="15" y1="16" x2="19" y2="12"></line>
-                                        <line x1="15" y1="8" x2="19" y2="12"></line>
-                                    </svg></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card border-light border-1 d-flex flex-grow-1 justify-content-center p-2">
-                        <div class="card-body">
-                            <div class="bs-icon-md bs-icon-rounded bs-icon-secondary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-4 bs-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-image">
-                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"></path>
-                                </svg></div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h4 class="fw-bold mb-0">Person Detected: {{ person_detected }}</h4><a class="fw-bold" href="#"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icon-tabler-arrow-narrow-right fs-3">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        <line x1="15" y1="16" x2="19" y2="12"></line>
-                                        <line x1="15" y1="8" x2="19" y2="12"></line>
-                                    </svg></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
             <div class="col-md-6 text-center text-md-start d-flex d-sm-flex d-md-flex justify-content-center align-items-center justify-content-md-start align-items-md-center justify-content-xl-center" style="margin-top: 17px;">
                 <div style="max-width: 350px;"><a class="btn btn-primary btn-lg me-2" role="button" href="#" style="border-radius: 12px;">History</a><a class="btn btn-secondary btn-lg" role="button" href="#" style="border-radius: 12px;">Data</a></div>
             </div>
@@ -199,4 +104,24 @@
             <div></div>
         </div>
     </div>
+{% endblock %}
+{% block scripts %}
+<script>
+    // Function to open the image in a new tab
+    function openImageInNewTab(base64ImageData) {
+      var img = new Image();
+      img.src = base64ImageData;
+
+      var newTab = window.open();
+      newTab.document.write('<html><head><title>Image</title></head><body></body></html>');
+      newTab.document.body.appendChild(img);
+    }
+
+    // Attach click event listener to the image
+    $('.img-fluid').on('click', function() {
+      // Replace 'YOUR_BASE64_IMAGE_DATA' with your actual Base64 image data
+      var base64ImageData = $(this).attr('src');
+      openImageInNewTab(base64ImageData);
+    });
+  </script>
 {% endblock %}

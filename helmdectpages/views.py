@@ -4,6 +4,8 @@ from helmdect.settings import FIREBASE_CONFIG
 from .forms import RegisterForm, LoginForm, SettingsForm, ReportForm, DetailedReportForm
 from .models import User
 import pyrebase
+from datetime import datetime
+from operator import itemgetter
 
 # Initialize Firebase Realtime Database
 config = FIREBASE_CONFIG
@@ -55,27 +57,24 @@ def login(request):
 def home(request):
     return render(request, 'helmdectpages/home.html')
 
+def about(request):
+    return render(request, 'helmdectpages/about.html')
+
 def report_history(request):
-    report_fields = {
-        "plate_number": "1234",
-        "helmet": "Yes",
-        "object_detected": "No",
-        "person_detected": "Yes",
-        "image": "https://firebasestorage.googleapis.com/v0/b/helmdetect.appspot.com/o/sample%20image.png?alt=media&token=9933e2d0-eaf1-4db3-954c-968e187fe168"
-    }
+    # Fetching all documents under the path 'test/push'
+    reports = database.child("test/push").get().val()
 
-    for field, value in report_fields.items():
-        set_database_value(f"reports/{field}", value)
+    # Processing the retrieved reports into a context dictionary
+    report_datas = {}
+    if reports:
+        for key, value in reports.items():
+            report_datas[key] = value
 
-    report_data = {
-        'plate_number': get_database_value("reports/plate_number"),
-        'helmet': get_database_value("reports/helmet"),
-        'object_detected': get_database_value("reports/object_detected"),
-        'person_detected': get_database_value("reports/person_detected"),
-        'image': get_database_value("reports/image")
-    }
+    # Sort report_datas by dateTime field in descending order (latest first)
+    report_datas = dict(sorted(report_datas.items(), key=lambda item: item[1].get('dateTime', ''), reverse=True))
 
-    return render(request, 'helmdectpages/report_history.html', report_data)
+    return render(request, 'helmdectpages/report_history.html', {'reports': report_datas})
+
 def data_visualization(request):
     report_fields = {
         "date": "2023-11-27",
