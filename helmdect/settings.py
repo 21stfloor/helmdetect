@@ -19,7 +19,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Firebase configuration 
+# Firebase configuration
 with open(os.path.join(BASE_DIR, 'firebase_config.json')) as f:
     FIREBASE_CONFIG = json.load(f)
 
