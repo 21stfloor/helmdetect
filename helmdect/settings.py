@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-xywye=0-1c)n6lr+h6jsy%rn!n4zetowt$6u(e$##!#3-gc=mz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://helmetdetect.pythonanywhere.com', '127.0.0.1']
+ALLOWED_HOSTS = ['helmetdetect.pythonanywhere.com', '127.0.0.1']
 
 
 # Application definition
