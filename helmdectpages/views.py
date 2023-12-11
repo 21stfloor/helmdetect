@@ -57,7 +57,7 @@ def signout(request):
     logout(request)
     return render(request, 'helmdectpages/login.html')
     
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')
 def home(request):
     return render(request, 'helmdectpages/home.html')
 
