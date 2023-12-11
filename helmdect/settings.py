@@ -19,7 +19,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Firebase configuration 
+# Firebase configuration
 with open(os.path.join(BASE_DIR, 'firebase_config.json')) as f:
     FIREBASE_CONFIG = json.load(f)
 
@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-xywye=0-1c)n6lr+h6jsy%rn!n4zetowt$6u(e$##!#3-gc=mz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://helmetdetect.pythonanywhere.com']
+ALLOWED_HOSTS = ['helmetdetect.pythonanywhere.com']
 
 
 # Application definition
