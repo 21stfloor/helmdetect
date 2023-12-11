@@ -12,11 +12,14 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-md-6 col-lg-8">
                     <div>
+                        
                         <form class="p-3 p-xl-4" method="post" data-bs-theme="light">
+                            {% csrf_token %}
                             <div class="mb-3"><input class="shadow form-control" type="text" id="name-1" name="user_account" placeholder="JOLOUJED BASERIANG" readonly=""></div>
                             <div class="mb-3"><input class="shadow form-control" type="email" id="email-1" name="user_number" readonly="" placeholder="2378456742854"></div>
                             <div class="mb-3"></div>
-                            <div><button class="btn btn-primary shadow d-block w-100" type="submit" style="margin-bottom: 10px;">CHANGE PASSWORD</button><button class="btn btn-primary shadow d-block w-100" type="submit" style="margin-bottom: 10px;">SWITCH ACCOUNT</button><button class="btn btn-primary shadow d-block w-100" type="submit" style="margin-bottom: 10px;">SIGN OUT</button></div>
+                            <div><button class="btn btn-primary shadow d-block w-100" type="submit" style="margin-bottom: 10px;">CHANGE PASSWORD</button><button class="btn btn-primary shadow d-block w-100" type="submit" style="margin-bottom: 10px;">SWITCH ACCOUNT</button>
+                                <a href="{% url 'helmdectpages:login' %}"><button class="btn btn-primary shadow d-block w-100" type="submit" style="margin-bottom: 10px;">SIGN OUT</button></div></a>
                             <div class="col-md-6 col-lg-6 text-center text-md-start d-flex d-sm-flex d-md-flex justify-content-center align-items-center justify-content-md-start align-items-md-center justify-content-xl-center" style="margin-top: 17px;">
                                 <div style="max-width: 350px;"><a class="btn btn-primary me-2" role="button" href="#" style="border-radius: 12px;">Dark Mode</a><a class="btn btn-secondary" role="button" href="#" style="border-radius: 12px;">Light Mode</a></div>
                             </div>

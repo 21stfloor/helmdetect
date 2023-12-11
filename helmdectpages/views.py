@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 from helmdect.settings import FIREBASE_CONFIG
 from .forms import RegisterForm, LoginForm, SettingsForm, ReportForm, DetailedReportForm
 from .models import User
@@ -19,15 +20,16 @@ def register(request):
         if form.is_valid():
             email      = form.cleaned_data['email']
             password   = form.cleaned_data['password']
-            confirm_password = form.cleaned_data['confirm_password']
+            # confirm_password = form.cleaned_data['confirm_password']
             
-            if password == confirm_password:
-                user = User(email=email, password=password, confirm_password=confirm_password)
+            if password == password:
+                user = User(email=email, password=password)
                 user.save()
-                return HttpResponse("User created successfully")
+                return render(request, 'helmdectpages/report_history.html')
             else:
                 return HttpResponse("Password and Confirm Password does not match")
         else:
+            print(form.errors)
             return HttpResponse("Invalid Form")
     else:
         form = RegisterForm()
@@ -51,7 +53,9 @@ def login(request):
     else:
         form = LoginForm()
         return render(request, 'helmdectpages/login.html', {'form': form})
-
+def signout(request):
+    logout(request)
+    return render(request, 'helmdectpages/login.html')
     
 @login_required(login_url='/login/')
 def home(request):
