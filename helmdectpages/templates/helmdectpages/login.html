@@ -13,34 +13,14 @@
                                 {% csrf_token %}
                             
                                 {% bootstrap_form form %}
+                                <div class="form-group bg-white">
+                                    {% for error in form.non_field_errors %}
+                                    <p class="text-danger">{{ error }}</p>
+                                    {% endfor %}
+                                  </div>
                                 <button type="submit" class="btn btn-primary">Login</button>
                             </form>
-                            <!-- <form class="text-center" method="post">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    {{ form.email }}
-                                    <label for="{{ form.email.id_for_label }}"></label>
-                                    {% comment %} <input class="form-control" type="email" name="email" placeholder="Email"> {% endcomment %}
-                                </div>
-                                <div class="mb-3">
-                                    {{ form.password }}
-                                    <label for="{{ form.password.id_for_label }}"></label>
-                                    {% comment %} <input class="form-control" type="password" name="password" placeholder="Password"> {% endcomment %}
-                                </div>
-                                <div class="form-check" style="color: var(--bs-emphasis-color);font-size: 12px;margin-bottom: 11px;">
-                                    <input class="form-check-input" type="checkbox" id="formCheck-1" style="color: var(--bs-emphasis-color);margin-left: -19px;" required="">
-                                    <label class="form-check-label" for="formCheck-1" style="margin-left: -50px;">TERMS AND CONDITIONS</label></div>
-                                <div class="row">
-                                    {% comment %} <div class="col" style="border-style: none;">
-                                        <div class="mb-3" style="border-style: none;">
-                                            <button class="btn btn-secondary d-block w-100" type="submit">Register</button>
-                                        </div>
-                                    </div> {% endcomment %}
-                                    <div class="col">
-                                        <div class="mb-3"><button class="btn d-block w-100" type="submit" style="background: var(--bs-yellow);color: var(--bs-emphasis-color);">Sign-in</button></div>
-                                    </div>
-                                </div>
-                            </form> -->
+                            
                             <div class="row">
                                 <div class="col">
                                     <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>

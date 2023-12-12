@@ -15,6 +15,7 @@
                                 {% csrf_token %}
                             
                                 {% bootstrap_form form %}
+                                <div id='form-errors' class="text-red">{{ form_errors }}</div>
                                 <button type="submit" class="btn btn-primary">Register</button>
                             </form>
                             <!-- <form class="text-center" method="POST">

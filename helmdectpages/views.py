@@ -4,10 +4,11 @@ from django.contrib.auth import logout
 from helmdect.settings import FIREBASE_CONFIG
 from django.shortcuts import render, redirect
 from django.urls import reverse
-# from .models import User
+from django.contrib import messages
 import pyrebase
 from .forms import SignUpForm, UserLoginForm
 from django.contrib.auth import authenticate, login as auth_login 
+from django.contrib.auth.views import LoginView
 
 # Initialize Firebase Realtime Database
 config = FIREBASE_CONFIG
@@ -16,32 +17,47 @@ database = firebase.database()
 
 # Create your views here.
 def register(request):
-    if request.method == 'POST':
+    context = {}
+    if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
-            email = form.cleaned_data.get('email')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=email, password=raw_password)
+            user = form.save()
             auth_login(request, user)
-            return redirect('home')  # Replace 'home' with your desired redirect URL after login
-    else:
-        form = SignUpForm()
-    return render(request, 'helmdectpages/register.html', {'form': form})
+            return redirect("home")
+        context['form_errors'] = form.errors
+        messages.error(
+            request, "Unsuccessful registration. Invalid information.")
+    form = SignUpForm()
+    context["form"] = form
+    return render(request=request, template_name="helmdectpages/register.html", context=context)
 
-def user_login(request):
-    if request.method == 'POST':
-        form = UserLoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=email, password=password)
-            if user:
-                auth_login(request, user)
-                return redirect(reverse('home'))  # Replace 'home' with your desired redirect URL after login
-    else:
-        form = UserLoginForm()
-    return render(request, 'helmdectpages/login.html', {'form': form})
+class MyLoginView(LoginView):
+    # form_class=LoginForm
+    redirect_authenticated_user=True
+    template_name='helmdectpages/login.html'
+
+    def get_success_url(self):
+        # write your logic here
+        # if self.request.user.is_superuser:
+        return reverse('home')# '/progress/'
+
+# def user_login(request):
+#     if request.method == 'POST':
+#         form = UserLoginForm(request.POST)
+#         if form.is_valid():
+#             email = form.cleaned_data.get('email')
+#             password = form.cleaned_data.get('password')
+#             user = authenticate(username=email, password=password)
+#             if user:
+#                 auth_login(request, user)
+#                 return redirect(reverse('home'))  # Replace 'home' with your desired redirect URL after login
+#         else:
+#             # Pass the form with errors to the template
+#             return render(request, 'login.html', {'form': form})
+
+#     else:
+#         form = UserLoginForm()
+#     return render(request, 'helmdectpages/login.html', {'form': form})
 
 def signout(request):
     logout(request)

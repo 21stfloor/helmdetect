@@ -24,7 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     # path('test-firebase/', views.test_database, name='test_firebase'),
-    path('login/', views.user_login, name='login'),
+    path('login/', views.MyLoginView.as_view(), name='login'),
     path('register/', views.register, name='register'),
     path('signout/', views.signout, name='signout'),
     # path('home/', views.home, name='home'),
