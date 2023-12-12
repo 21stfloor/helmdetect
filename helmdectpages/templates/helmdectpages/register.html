@@ -1,5 +1,7 @@
 {% extends "helmdectpages/base.html" %}
 
+{% load django_bootstrap5 %}
+
 {% block content %}
     <section class="position-relative py-4 py-xl-5">
         <div class="container" style="margin-top: 100px;">
@@ -8,7 +10,14 @@
                     <div class="card mb-5">
                         <div class="card-body d-flex flex-column align-items-center">
                             <h1 style="color: var(--bs-emphasis-color);font-size: 31;font-weight: bold;text-align: center;margin-right: 0px;font-family: Adamina, serif;margin-bottom: 24px;">HelmDect</h1>
-                            <form class="text-center" method="POST">
+                            
+                            <form  method="post" class="form">
+                                {% csrf_token %}
+                            
+                                {% bootstrap_form form %}
+                                <button type="submit" class="btn btn-primary">Register</button>
+                            </form>
+                            <!-- <form class="text-center" method="POST">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     {{ form.email }}
@@ -38,7 +47,7 @@
                                             <div class="mb-3"><button class="btn btn-secondary d-block w-100" type="submit">Register</button></div>
                                         </div>
                                     </div>
-                            </form>
+                            </form> -->
                             <p>Already have an account? <a href="/login">Log in here</a></p>
                             <div class="row">
                                 <div class="col">

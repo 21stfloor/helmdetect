@@ -2,11 +2,12 @@ from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from helmdect.settings import FIREBASE_CONFIG
-from .forms import RegisterForm, LoginForm, SettingsForm, ReportForm, DetailedReportForm
-from .models import User
+from django.shortcuts import render, redirect
+from django.urls import reverse
+# from .models import User
 import pyrebase
-from datetime import datetime
-from operator import itemgetter
+from .forms import SignUpForm, UserLoginForm
+from django.contrib.auth import authenticate, login as auth_login 
 
 # Initialize Firebase Realtime Database
 config = FIREBASE_CONFIG
@@ -16,46 +17,35 @@ database = firebase.database()
 # Create your views here.
 def register(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
-            email      = form.cleaned_data['email']
-            password   = form.cleaned_data['password']
-            # confirm_password = form.cleaned_data['confirm_password']
-            
-            if password == password:
-                user = User(email=email, password=password)
-                user.save()
-                return render(request, 'helmdectpages/report_history.html')
-            else:
-                return HttpResponse("Password and Confirm Password does not match")
-        else:
-            print(form.errors)
-            return HttpResponse("Invalid Form")
+            form.save()
+            email = form.cleaned_data.get('email')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=email, password=raw_password)
+            auth_login(request, user)
+            return redirect('home')  # Replace 'home' with your desired redirect URL after login
     else:
-        form = RegisterForm()
-        return render(request, 'helmdectpages/register.html', {'form': form})
+        form = SignUpForm()
+    return render(request, 'helmdectpages/register.html', {'form': form})
 
-def login(request):
+def user_login(request):
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = UserLoginForm(request.POST)
         if form.is_valid():
-            email    = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            user = User.objects.filter(email=email, password=password).first()
-            
+            email = form.cleaned_data.get('email')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=email, password=password)
             if user:
-                request.session['user_id'] = user.id
-                return render(request, 'helmdectpages/home.html')
-            else:
-                return HttpResponse("Invalid Credentials")
-        else:
-            return HttpResponse("Invalid Form")
+                auth_login(request, user)
+                return redirect(reverse('home'))  # Replace 'home' with your desired redirect URL after login
     else:
-        form = LoginForm()
-        return render(request, 'helmdectpages/login.html', {'form': form})
+        form = UserLoginForm()
+    return render(request, 'helmdectpages/login.html', {'form': form})
+
 def signout(request):
     logout(request)
-    return render(request, 'helmdectpages/login.html')
+    return redirect('login')
     
 # @login_required(login_url='/login/')
 def home(request):
@@ -64,6 +54,7 @@ def home(request):
 def about(request):
     return render(request, 'helmdectpages/about.html')
 
+@login_required
 def report_history(request):
     # Fetching all documents under the path 'test/push'
     reports = database.child("test/push").get().val()
@@ -79,6 +70,7 @@ def report_history(request):
 
     return render(request, 'helmdectpages/report_history.html', {'reports': report_datas})
 
+@login_required
 def data_visualization(request):
     report_fields = {
         "date": "2023-11-27",
@@ -100,6 +92,7 @@ def data_visualization(request):
     
     return render(request, 'helmdectpages/data_visualization.html', report_data)
 
+@login_required
 def detailed_reports(request):
     report_fields = {
         "number_of_motorcyclist_detected": "1",
@@ -126,6 +119,7 @@ def detailed_reports(request):
     
     return render(request, 'helmdectpages/detailed_reports.html', report_data)
 
+@login_required
 def settings(request):
     return render(request, 'helmdectpages/settings.html')
 

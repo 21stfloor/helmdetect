@@ -14,15 +14,15 @@
         <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span>HelmDect</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item"><a class="nav-link active" href="{% url 'helmdectpages:home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'home' %}">Home</a></li>
                     {% if not user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
                     {% endif %}
                     {% if user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:report_history' %}">Report History</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:data_visualization' %}">Data Visualization</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:detailed_reports' %}">Detailed Reports</a></li>                    
-                    <li class="nav-item"><a class="nav-link" href="{% url 'helmdectpages:settings' %}">Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'report_history' %}">Report History</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'data_visualization' %}">Data Visualization</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'detailed_reports' %}">Detailed Reports</a></li>                    
+                    <li class="nav-item"><a class="nav-link" href="{% url 'settings' %}">Settings</a></li>
                     {% endif %}
                 </ul>
             </div>

@@ -16,8 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from helmdectpages import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(('helmdectpages.urls', 'helmdectpages'), namespace='helmdectpages')),
-]
+    path('', views.register, name='register'),
+    # path('test-firebase/', views.test_database, name='test_firebase'),
+    path('login/', views.user_login, name='login'),
+    path('signout/', views.signout, name='signout'),
+    path('home/', views.home, name='home'),
+    path('report-history/', views.report_history, name='report_history'),
+    path('data-visualization/', views.data_visualization, name='data_visualization'),
+    path('detailed-reports/', views.detailed_reports, name='detailed_reports'),
+    path('settings/', views.settings, name='settings'),
+]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
