@@ -23,16 +23,13 @@
                                 type="email" id="email-1" name="user_number"
                                 readonly placeholder="#" value="{{ user.id }}"></div>
                         <div class="mb-3"></div>
-                        <div><button
+                        <div><a href="{% url 'change_password' %}"
                                 class="btn btn-primary shadow d-block w-100"
                                 type="submit" style="margin-bottom: 10px;">CHANGE
-                                PASSWORD</button>
+                                PASSWORD</a>
                             <a href="{% url 'signout' %}"
                                 class="btn btn-primary shadow d-block w-100">SIGN
                                 OUT</a>
-                            <!-- <div class="col-md-6 col-lg-6 text-center text-md-start d-flex d-sm-flex d-md-flex justify-content-center align-items-center justify-content-md-start align-items-md-center justify-content-xl-center" style="margin-top: 17px;">
-                                <div style="max-width: 350px;"><a class="btn btn-primary me-2" role="button" href="#" style="border-radius: 12px;">Dark Mode</a><a class="btn btn-secondary" role="button" href="#" style="border-radius: 12px;">Light Mode</a></div>
-                            </div> -->
                         </form>
                     </div>
                 </div>

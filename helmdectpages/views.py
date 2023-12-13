@@ -15,8 +15,8 @@ from firebase_admin import storage
 import base64
 from datetime import datetime
 from .firebase_init import firebase_admin  # Import the firebase initialization
-
-
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 
 # Initialize Firebase Realtime Database
@@ -49,6 +49,23 @@ class UploadImageView(APIView):
             return Response({'image_url': image_url}, status=200)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Update the session with the new password
+            messages.success(request, 'Your password was changed successfully.')
+            return redirect('home')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'helmdectpages/change_password.html', context)
 
 # Create your views here.
 def register(request):
