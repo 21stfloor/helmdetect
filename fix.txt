@@ -1,0 +1,16 @@
+[DONE]registration error
+[Report History]
+    [Done]lightgallery type
+    [Done]when clicked -> show details
+    [Done]filter by date
+[Done][footer social links]
+[Navbar]
+[Done]Profile Icon -> click -> go to settings
+
+
+
+[Detailed Report]
+show datas
+
+
+[Overall design]
