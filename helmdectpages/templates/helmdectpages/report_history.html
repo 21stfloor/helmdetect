@@ -4,19 +4,12 @@
 {% block css %}
 <link rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" type="text/css"
+    href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
 {% endblock %}
 {% block content %}
 <section class="py-5 mt-5">
-    <form class="d-flex justify-content-center flex-wrap" method="post"
-        data-bs-theme="light" style="margin-left: initial;">
-        <div class="shadow-lg mb-3"><input class="form-control" type="email"
-                name="search" placeholder="Search"></div>
-        <div class="shadow-lg mb-3"><button class="btn btn-primary"
-                type="submit">Search</button></div>
-    </form>
-</section>
-<section>
-    <div class="container py-4 py-xl-5">
+    <div class="container py-5">
         <div class="row mb-5">
             <div class="col-md-8 col-xl-6">
                 <h3 class="display-6 fw-bold pb-4 mb-4">Reports:&nbsp;<span
@@ -25,7 +18,7 @@
             <div class="col">
                 <label for="dateFilter">Date Filter</label>
                 <input type="text" id="dateFilter" class="form-control"
-                    placeholder="Select Date">
+                    placeholder="Select Date" autocomplete="off">
             </div>
         </div>
 
@@ -91,28 +84,12 @@
     lightGallery(lightGalleryDiv, {
         selector: 'a',
         thumbnail: true,
-        download: false,
+        download: true,
+        margin: 30,
         zoom: true
+
         // Add more options as needed
     });
 </script>
 
-<script>
-    // Function to open the image in a new tab
-    function openImageInNewTab(base64ImageData) {
-      var img = new Image();
-      img.src = base64ImageData;
-
-      var newTab = window.open();
-      newTab.document.write('<html><head><title>Image</title></head><body></body></html>');
-      newTab.document.body.appendChild(img);
-    }
-
-    // Attach click event listener to the image
-    $('.img-fluid').on('click', function() {
-      // Replace 'YOUR_BASE64_IMAGE_DATA' with your actual Base64 image data
-      var base64ImageData = $(this).attr('src');
-      openImageInNewTab(base64ImageData);
-    });
-  </script>
 {% endblock %}

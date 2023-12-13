@@ -1,59 +1,89 @@
 {% extends "helmdectpages/base.html" %}
 
+{% block css %}
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+<link rel="stylesheet"
+    href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+{% endblock %}
 {% block content %}
-    <section class="py-5 mt-5">
-        <form class="d-flex justify-content-center flex-wrap" method="post" data-bs-theme="light" style="margin-left: initial;">
-            <div class="shadow-lg mb-3"><input class="form-control" type="email" name="search" placeholder="Search"></div>
-            <div class="shadow-lg mb-3"><button class="btn btn-primary" type="submit">Search</button></div>
-        </form>
-        <div class="container py-5">
-            <div class="row mb-5">
-                <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h2 class="fw-bold"><br><span class="underline pb-2">Detailed Reports of Violators</span></h2>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th scope="col">Number of Motor<br>cyclist Detected</th>
-                            <th scope="col">Plate number</th>
-                            <th scope="col">location</th>
-                            <th scope="col">time</th>
-                            <th scope="col">type of helmet</th>
-                            <th scope="col">Color</th>
-                            <th scope="col">texture</th>
-                            <th scope="col">Proper usage</th>
-                            <th scope="col">violations</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-label="Attributes" scope="row">{{ motorcyclist_detected }}</td>
-                            <td data-label="Base Class">{{ plate_number }}</td>
-                            <td data-label="Simulated Case">{{ location }}</td>
-                            <td data-label="Simulated Case">{{ time }}</td>
-                            <td data-label="Simulated Case">{{ type_of_helmet }}</td>
-                            <td data-label="Simulated Case">{{ color }}</td>
-                            <td data-label="Simulated Case">{{ texture }}</td>
-                            <td data-label="Simulated Case">{{ proper_usage }}</td>
-                            <td data-label="Simulated Case">{{ violations }}</td>
-                        </tr>
-                        <tr>
-                            <td data-label="Attributes" scope="row">{{ motorcyclist_detected }}</td>
-                            <td data-label="Base Class">{{ plate_number }}</td>
-                            <td data-label="Simulated Case">{{ location }}</td>
-                            <td data-label="Simulated Case">{{ time }}</td>
-                            <td data-label="Simulated Case">{{ type_of_helmet }}</td>
-                            <td data-label="Simulated Case">{{ color }}</td>
-                            <td data-label="Simulated Case">{{ texture }}</td>
-                            <td data-label="Simulated Case">{{ proper_usage }}</td>
-                            <td data-label="Simulated Case">{{ violations }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+<section class="py-5 mt-5">
+    <div class="container py-5">
+        <div class="row mb-5">
+            <div class="col-md-8 col-xl-6 text-center mx-auto">
+                <h2 class="fw-bold"><br><span class="underline pb-2">Detailed
+                        Reports of Violators</span></h2>
             </div>
         </div>
-    </section>
-    {% include 'partials/footer.html' %}
+        <table id="reportsTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Helmet Worn</th>
+                    <!-- <th>Image</th> -->
+                    <th>Location</th>
+                    <th>Motorcyclists Detected</th>
+                    <th>Plate Number</th>
+                    <th>Violations</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+</section>
+{% include 'partials/footer.html' %}
+{% endblock %}
+
+{% block scripts %}
+<script
+    src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+
+<script
+    src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+  $.ajax({
+    url: "https://helmdetect-default-rtdb.asia-southeast1.firebasedatabase.app/reports.json?print=pretty",
+    dataType: "json",
+    success: function(data) {
+      const reportsData = [];
+      for (const key in data) {
+        const report = data[key];
+        report.id = key;
+
+        let date = new Date(report.dateTime);
+
+        // Format the date and time
+        let formattedDateTime = date.toLocaleString();
+
+        // Replace timestamp with formatted date and time
+        report.dateTime = formattedDateTime;
+
+        reportsData.push(report);
+      }
+
+      console.log(reportsData);
+
+      $('#reportsTable').DataTable({
+        data: reportsData,
+        columns: [
+          { data: 'dateTime', title: 'Date & Time' },
+          { data: 'helmet', title: 'Helmet Worn', render: function (data) {
+            return data ? 'Yes' : 'No';
+          } },
+          { data: 'location', title: 'Location' },
+          { data: 'number_of_motorcyclist_detected', title: 'Motorcyclists Detected' },
+          { data: 'plate_number', title: 'Plate Number' },
+          { data: 'violations', title: 'Violations' },
+        ]
+      });
+    },
+    error: function(error) {
+      console.error("Error fetching data:", error);
+    }
+  });
+});
+
+</script>
 {% endblock %}

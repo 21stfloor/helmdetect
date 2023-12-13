@@ -79,5 +79,15 @@ table {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
   }
-  
+
+  .nav-link{
+    font-family: 'Lexend Deca', sans-serif;
+    color: white !important;
+  }
+
+  .nav-link.active{
+    
+    background-color: rgb(13,202,240);
+  }
+
   
