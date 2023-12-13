@@ -127,6 +127,9 @@ def report_history(request):
                         try:
                             report_date = datetime.fromtimestamp(timestamp / 1000.0)
                             if start_date <= report_date <= end_date:
+                                # Check and set default value for helmet_type if missing
+                                if 'helmet_type' not in value:
+                                    value['helmet_type'] = 'Unknown'
                                 filtered_reports[key] = value
                         except (ValueError, OSError) as e:
                             # Handle conversion errors
@@ -147,6 +150,7 @@ def report_history(request):
     report_datas = dict(sorted(report_datas.items(), key=lambda item: item[1].get('dateTime', 0), reverse=True))
 
     return render(request, 'helmdectpages/report_history.html', {'reports': report_datas})
+
 
 
 @login_required

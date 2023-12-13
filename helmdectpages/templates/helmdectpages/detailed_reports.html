@@ -23,7 +23,7 @@
                     <tr>
                         <th>Date & Time</th>
                         <th>Helmet Worn</th>
-                        <!-- <th>Image</th> -->
+                        <th>Type of helmet</th>
                         <th>Location</th>
                         <th>Motorcyclists Detected</th>
                         <th>Plate Number</th>
@@ -49,7 +49,7 @@
     src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
     
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
   $.ajax({
     url: "https://helmdetect-default-rtdb.asia-southeast1.firebasedatabase.app/reports.json?print=pretty",
     dataType: "json",
@@ -67,6 +67,11 @@
         // Replace timestamp with formatted date and time
         report.dateTime = formattedDateTime;
 
+        // Check and set default value for helmet_type if missing
+        if (!report.hasOwnProperty('helmet_type')) {
+          report.helmet_type = 'Unknown';
+        }
+
         reportsData.push(report);
       }
 
@@ -79,6 +84,7 @@
           { data: 'helmet', title: 'Helmet Worn', render: function (data) {
             return data ? 'Yes' : 'No';
           } },
+          { data: 'helmet_type', title: 'Helmet Type' },
           { data: 'location', title: 'Location' },
           { data: 'number_of_motorcyclist_detected', title: 'Motorcyclists Detected' },
           { data: 'plate_number', title: 'Plate Number' },
@@ -91,6 +97,7 @@
     }
   });
 });
+
 
 </script>
 {% endblock %}
