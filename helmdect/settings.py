@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 import json
-import firebase_admin
-from firebase_admin import credentials
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

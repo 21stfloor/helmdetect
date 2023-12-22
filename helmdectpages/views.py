@@ -15,10 +15,8 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.views import LoginView
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from firebase_admin import storage
 import base64
 from datetime import datetime
-from .firebase_init import firebase_admin  # Import the firebase initialization
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from PIL import Image
@@ -31,30 +29,6 @@ database = firebase.database()
 model = YOLO(os.path.join(BASE_DIR, 'best.pt'))
 
 
-class UploadImageView(APIView):
-    def post(self, request):
-        try:
-            base64_image = request.data.get('base64_image')
-
-            if not base64_image:
-                return Response({'error': 'Base64 image data is missing'}, status=400)
-
-            filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + "_uploaded_image.jpg"
-
-            image_bytes = base64.b64decode(base64_image)
-            bucket = storage.bucket()
-
-            destination_blob_name = f"images/{filename}"
-            blob = bucket.blob(destination_blob_name)
-
-            blob.upload_from_string(image_bytes, content_type='image/jpeg')
-
-            blob.make_public()
-            image_url = blob.public_url
-
-            return Response({'image_url': image_url}, status=200)
-        except Exception as e:
-            return Response({'error': str(e)}, status=500)
 
 @login_required
 def change_password(request):
@@ -207,7 +181,7 @@ def process_image(request):
         img = Image.open(BytesIO(decoded))
 
         # Run inference on the image using YOLO model
-        results = model.predict(img, save=True, imgsz=320, conf=0.1)
+        results = model.predict(img, save=False, imgsz=320, conf=0.1)
 
         classes = []
         for result in results:
