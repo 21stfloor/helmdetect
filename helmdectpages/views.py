@@ -1,7 +1,11 @@
+from io import BytesIO
+import os
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from helmdect.settings import FIREBASE_CONFIG
+from helmdect.settings import BASE_DIR, FIREBASE_CONFIG
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
@@ -17,12 +21,14 @@ from datetime import datetime
 from .firebase_init import firebase_admin  # Import the firebase initialization
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-
+from PIL import Image
+from ultralytics import YOLO
 
 # Initialize Firebase Realtime Database
 config = FIREBASE_CONFIG
 firebase = pyrebase.initialize_app(config)
 database = firebase.database()
+model = YOLO(os.path.join(BASE_DIR, 'best.pt'))
 
 
 class UploadImageView(APIView):
@@ -190,16 +196,25 @@ def set_database_value(path, value):
 def get_database_value(path):
     return database.child(path).get().val()
 
+@csrf_exempt
+def process_image(request):
+    if request.method == 'POST':
+        base64_string = request.POST.get('image', None)  # Assuming the base64 string is sent as a parameter named 'base64_string'
+        if(base64_string is None):
+            return JsonResponse({'error': 'Invalid request'}, status=400)
+        # Convert base64 string to image
+        decoded = base64.b64decode(base64_string)
+        img = Image.open(BytesIO(decoded))
 
-# def test_database():
-#     # Write a test value to the database
-#     database.child("test").set("Hello, Realtime DB!")
+        # Run inference on the image using YOLO model
+        results = model.predict(img, save=True, imgsz=320, conf=0.1)
 
-#     # Read the test value back
-#     test_value = database.child("test").get().val()
+        classes = []
+        for result in results:
+            for box in result.boxes:
+                class_id = int(box.data[0][-1])
+                classes.append(model.names[class_id])
 
-#     # Print the test value
-#     print(test_value)
-
-# # Call the test function
-# test_database()
+        return JsonResponse({'result': ' '.join(classes)})
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)

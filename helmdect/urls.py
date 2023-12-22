@@ -32,5 +32,6 @@ urlpatterns = [
     path('detailed-reports/', views.detailed_reports, name='detailed_reports'),
     path('settings/', views.settings, name='settings'),
     path('change-password/', views.change_password, name='change_password'),
-    path('upload-image/', views.UploadImageView.as_view(), name='upload_image')
+    path('upload-image/', views.UploadImageView.as_view(), name='upload_image'),
+    path('process_image/', views.process_image, name='process_image')
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
