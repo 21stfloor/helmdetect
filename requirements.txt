@@ -1,7 +1,8 @@
-Django
-djangorestframework
-ultralytics
-django-bootstrap5
-pyrebase4
 dj_database_url
+Django
+django-bootstrap5
+djangorestframework
+psycopg
+pyrebase4
+ultralytics
 whitenoise
