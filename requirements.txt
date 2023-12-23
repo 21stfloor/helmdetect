@@ -3,3 +3,5 @@ djangorestframework
 ultralytics
 django-bootstrap5
 pyrebase4
+dj_database_url
+whitenoise
