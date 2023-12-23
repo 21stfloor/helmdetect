@@ -12,7 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 import json
+import secrets
 from pathlib import Path
+
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,15 +31,19 @@ with open(os.path.join(BASE_DIR, 'firebase_config.json')) as f:
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-xywye=0-1c)n6lr+h6jsy%rn!n4zetowt$6u(e$##!#3-gc=mz'
 
+IS_HEROKU_APP = "DYNO" in os.environ and not "CI" in os.environ
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['helmetdetect.pythonanywhere.com', '127.0.0.1']
+if not IS_HEROKU_APP:
+    DEBUG = True
+    ALLOWED_HOSTS = ["*"]
+else:
+    ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +57,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,7 +92,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'helmdect.wsgi.application'
 
 
-if os.environ.get('DJANGO_ENV') == "LOCAL":
+if IS_HEROKU_APP:
+    # In production on Heroku the database configuration is derived from the `DATABASE_URL`
+    # environment variable by the dj-database-url package. `DATABASE_URL` will be set
+    # automatically by Heroku when a database addon is attached to your Heroku app. See:
+    # https://devcenter.heroku.com/articles/provisioning-heroku-postgres
+    # https://github.com/jazzband/dj-database-url
+    DATABASES = {
+        "default": dj_database_url.config(
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True,
+        ),
+    }
+else:
+    # When running locally in development or in CI, a sqlite database file will be used instead
+    # to simplify initial setup. Longer term it's recommended to use Postgres locally too.
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
@@ -91,20 +115,6 @@ if os.environ.get('DJANGO_ENV') == "LOCAL":
             'USER': 'root',
             'PASSWORD': '',
             'HOST': '127.0.0.1',
-            'PORT': '3306',
-            'OPTIONS': {
-                    'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            }
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'helmetdetect$default',
-            'USER': 'helmetdetect',
-            'PASSWORD': 'notCommonPassword123$',
-            'HOST': 'helmetdetect.mysql.pythonanywhere-services.com',
             'PORT': '3306',
             'OPTIONS': {
                     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
@@ -156,6 +166,18 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Media Folder Setings
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+STORAGES = {
+    # Enable WhiteNoise's GZip and Brotli compression of static assets:
+    # https://whitenoise.readthedocs.io/en/latest/django.html#add-compression-and-caching-support
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+# Don't store the original (un-hashed filename) version of static files, to reduce slug size:
+# https://whitenoise.readthedocs.io/en/latest/django.html#WHITENOISE_KEEP_ONLY_HASHED_FILES
+WHITENOISE_KEEP_ONLY_HASHED_FILES = True
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

@@ -4,3 +4,6 @@ Pillow
 ultralytics
 django-bootstrap5
 pyrebase4
+mysqlclient
+dj-database-url
+whitenoise
