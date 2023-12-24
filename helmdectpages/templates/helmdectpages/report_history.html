@@ -31,7 +31,7 @@
             {% with value.dateTime|timestamp_to_datetime as readable_datetime %}
             <a href="{{ value.image }}" data-lg-size="1024-768"
                 data-sub-html="<p>Date Time: {{ readable_datetime }}</p><p>Helmet: {{ value.helmet }}</p><p>Location: {{ value.location }}</p><p>Plate Number: {{ value.plate_number }}</p><p>Violations: {{ value.violations }}</p><p>Number of Motorcyclists Detected: {{ value.number_of_motorcyclist_detected }}</p>">
-                <img src="{{ value.image }}" alt="Image">
+                <img src="{{ value.image }}" class="img-fluid w-25" alt="Image">
             </a>
             {% endwith %}
             {% endfor %}
