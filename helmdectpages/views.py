@@ -130,6 +130,10 @@ def report_history(request):
                                 # Check and set default value for helmet_type if missing
                                 if 'helmet_type' not in value:
                                     value['helmet_type'] = 'Unknown'
+                                if 'image' not in value:
+                                    continue
+                                if not value['image'].startswith("http"):
+                                    continue
                                 filtered_reports[key] = value
                         except (ValueError, OSError) as e:
                             # Handle conversion errors
@@ -144,6 +148,10 @@ def report_history(request):
     report_datas = {}
     if reports:
         for key, value in reports.items():
+            if 'image' not in value:
+                continue
+            if not value['image'].startswith("http"):
+                continue
             report_datas[key] = value
 
     # Sort report_datas by dateTime field in descending order (latest first)
