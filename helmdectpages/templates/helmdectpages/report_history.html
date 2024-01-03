@@ -10,6 +10,9 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/css/lightgallery-bundle.min.css"
     integrity="sha512-nUqPe0+ak577sKSMThGcKJauRI7ENhKC2FQAOOmdyCYSrUh0GnwLsZNYqwilpMmplN+3nO3zso8CWUgu33BDag=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"
+      rel="stylesheet">
 {% endblock %}
 {% block content %}
 <section class="py-5 mt-5">
@@ -20,12 +23,50 @@
                         class="underline">Captured Photos</span></h3>
             </div>
             <div class="col">
-                <label for="dateFilter">Date Filter</label>
+                <!-- <label for="dateFilter">Date Filter</label> -->
                 <input type="text" id="dateFilter" class="form-control"
-                    placeholder="Select Date" autocomplete="off">
+                    placeholder="Select Date" autocomplete="off" readonly>
+            </div>
+            <div class="col">
+                <button class="btn btn-danger" id="deleteReportButton">Delete</button>
             </div>
         </div>
 
+        {% if user.is_superuser %}
+        <table id="imageTable" class="table">
+            <thead>
+                <tr>
+                    <th style="width: 5%;">
+                        <input type="checkbox" id="checkAllCheckbox">
+                    </th>
+                    <th>Image</th>
+                    <!-- Add other headers for your data -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in reports.items %}
+                {% with value.dateTime|timestamp_to_datetime as readable_datetime %}
+                <tr>
+                    <td style="width: 5%;">
+                        <input type="checkbox" class="report-checkbox"
+                            value="{{ key }}" style="transform: scale(1.5);">
+                    </td>
+                    <td>
+                        <img src="{{ value.image }}"
+                            class="img-fluid w-25 reportImage" alt="Image"
+                            data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop"
+                            id="{{ key }}"
+                            data-report="{{ value }}">
+                    </td>
+                    <!-- Add other columns based on your data -->
+                </tr>
+                {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
         <div id="lightgallery">
             {% for key, value in reports.items %}
             {% with value.dateTime|timestamp_to_datetime as readable_datetime %}
@@ -36,9 +77,83 @@
             {% endwith %}
             {% endfor %}
         </div>
+        {% endif %}
 
     </div>
 </section>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static"
+    data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <img
+                        src="https://firebasestorage.googleapis.com/v0/b/helmdetect.appspot.com/o/images%2F2023-12-13_11-16-17_uploaded_image.jpg?alt=media&token=b723f939-ef98-49c3-9196-8acee13927d3"
+                        id="previewImage" class="img-fluid mb-2"
+                        alt="Uploaded Image" style="max-height: 300px;">
+                </div>
+
+                <form id="reportForm">
+                    <div class="mb-3">
+                        <label for="dateTime" class="form-label">Date
+                            Time</label>
+                        <input type="text" class="form-control datepicker"
+                            id="dateTime" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="helmet" class="form-label">Helmet</label>
+                        <select class="form-select" id="helmet" required>
+                            <option value="true">Yes</option>
+                            <option value="false" selected>No</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="helmetType" class="form-label">Helmet
+                            Type</label>
+                        <input type="text" class="form-control" id="helmetType"
+                        required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="location"
+                            class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location"
+                        required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="numMotorcyclists" class="form-label">Number
+                            of Motorcyclists Detected</label>
+                        <input type="number" class="form-control"
+                            id="numMotorcyclists" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="plateNumber" class="form-label">Plate
+                            Number</label>
+                        <input type="text" class="form-control" id="plateNumber"
+                        required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="violations"
+                            class="form-label">Violations</label>
+                        <input type="text" class="form-control" id="violations" required>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" form="reportForm" id="updateReportButton">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% include 'partials/footer.html' %}
 
 {% endblock %}
@@ -52,8 +167,10 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/plugins/zoom/lg-zoom.min.js"
     integrity="sha512-BLW2Jrofiqm6m7JhkQDIh2olT0EBI58+hIL/AXWvo8gOXKmsNlU6myJyEkTy6rOAAZjn0032FRk8sl9RgXPYIQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js" integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
+    
     // Initialize Flatpickr
     const dateFilter = document.getElementById('dateFilter');
     var queryParams = getQueryParams();
@@ -64,22 +181,23 @@
     // Check if both dates are present in the query parameters
     if (startDate && endDate) {
         defaultDateRange = [startDate, endDate];
+        dateFilter.value = `${startDate} to ${endDate}`;
     }
 
-    flatpickr(dateFilter, {
-        mode: 'range', // Enable selecting a date range
-        dateFormat: 'Y-m-d', // Date format,
-        defaultDate: defaultDateRange,
-        allowInput: true,
-        allowClear: true,
-        onClose: function(selectedDates, dateStr) {
-            // When the user selects a date range, trigger the view with selected dates
-            const [startDate, endDate] = dateStr.split(" to ");
-            const url = `/report_history/?start_date=${startDate}&end_date=${endDate}`;
+    // flatpickr(dateFilter, {
+    //     mode: 'range', // Enable selecting a date range
+    //     dateFormat: 'Y-m-d', // Date format,
+    //     defaultDate: defaultDateRange,
+    //     allowInput: true,
+    //     allowClear: true,
+    //     onClose: function(selectedDates, dateStr) {
+    //         // When the user selects a date range, trigger the view with selected dates
+    //         const [startDate, endDate] = dateStr.split(" to ");
+    //         const url = `/report_history/?start_date=${startDate}&end_date=${endDate}`;
 
-            window.location.href = url;
-        }
-    });
+    //         window.location.href = url;
+    //     }
+    // });
     function getQueryParams() {
         var queryParams = {};
         var queryString = window.location.search.substring(1);
@@ -91,6 +209,251 @@
         return queryParams;
     }
 </script>
+
+{% if user.is_superuser %}
+<script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, child, push, update, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // TODO: Replace the following with your app's Firebase project configuration
+        // See: https://firebase.google.com/docs/web/learn-more#config-object
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_LnkCUL0Y9Guy6eciK7ilk8AFMxNg5Qo",
+            authDomain: "helmdetect.firebaseapp.com",
+            databaseURL: "https://helmdetect-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "helmdetect",
+            storageBucket: "helmdetect.appspot.com",
+            messagingSenderId: "545814528226",
+            appId: "1:545814528226:web:7f3e941dff5e8d42df1ebb"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const datePicker = document.getElementById('dateTime');
+
+        // Initialize Realtime Database and get a reference to the service
+        const database = getDatabase(app);
+        const form = document.getElementById('reportForm');
+
+        var selectedReportToUpdate = null;
+        var selectedReports = [];
+
+        const myModalEl = document.getElementById('staticBackdrop')
+        myModalEl.addEventListener('show.bs.modal', event => {
+            console.log(event);
+            let imgTag = event.relatedTarget;
+
+            let dataString = $(imgTag).data('report');
+            const jsonString = dataString
+            .replace(/'/g, '"')
+            .replace(/True/g, 'true')
+            .replace(/False/g, 'false');
+
+            try {
+                const dataObject = JSON.parse(jsonString);
+                console.log(dataObject); // This will log the JavaScript object to the console
+                selectedReportToUpdate = imgTag.id;
+                populateForm(dataObject);
+            } catch (error) {
+                console.error('Error parsing data:', error);
+            }
+        })
+
+        myModalEl.addEventListener('hide.bs.modal', event => {
+            selectedReportToUpdate = null;
+        });
+
+        $(document).ready(function() {
+            // DataTable initialization
+            const dataTable = $('#imageTable').DataTable({
+                searching: false
+                // Add DataTables options as needed
+            });
+
+            $('#deleteReportButton').on('click', confirmDelete);
+
+            // Check all checkbox functionality
+            $('#checkAllCheckbox').on('change', function() {
+                $('.report-checkbox').prop('checked', this.checked);
+                updateSelectedReports();
+            });
+
+            $('.report-checkbox').on('change', function() {
+                if (!this.checked) {
+                    $('#checkAllCheckbox').prop('checked', false);
+                } else {
+                    const allCheckboxes = $('.report-checkbox');
+                    const allChecked = Array.from(allCheckboxes).every(checkbox => checkbox.checked);
+                    $('#checkAllCheckbox').prop('checked', allChecked);
+                }
+                updateSelectedReports();
+            });
+
+            $('#updateReportButton').on('click', updateReport);
+        });
+
+        function updateReport(){
+            if (selectedReportToUpdate == null){
+                return;
+            }
+
+            console.log(selectedReportToUpdate);
+
+            // Check if the form is valid using built-in validation
+            if (!form.checkValidity()) {
+                bootbox.alert('Form is invalid. Please check the fields.');
+                return;
+            }
+
+            let selectedDate = getSelectedTimestamp();
+
+            if(selectedDate == null){
+                bootbox.alert('Please select a valid date!');
+                return;
+            }
+
+            let motorcyclist = parseInt($('#numMotorcyclists').val());
+
+            if(isNaN(motorcyclist) || motorcyclist <= 0){
+                bootbox.alert('Please select a motorcyclist count!');
+                return;
+            }
+
+            let helmet = $('#helmet').val() == "true";
+
+            const postData = {
+                dateTime: selectedDate,
+                helmet: helmet,
+                helmet_type: $('#helmetType').val(),
+                location: $('#location').val(),
+                number_of_motorcyclist_detected: motorcyclist,
+                plate_number: $('#plateNumber').val(),
+                violations: $('#violations').val()
+            };
+
+            let dialog = bootbox.dialog({
+                        message: '<p class="text-center mb-0"><i class="fas fa-spin fa-cog"></i> Updating report...</p>',
+                            closeButton: false
+                        }).on('shown.bs.modal', async function(){
+
+
+
+                
+
+                console.log(postData);
+
+                update(ref(database, 'reports/' + selectedReportToUpdate), postData)
+                .then(() => {
+                // Data saved successfully!
+                    dialog.modal('hide');
+                    bootbox.alert('Report has been updated successfully', function() {
+                        location.reload();
+                    })
+                })
+                .catch((error) => {
+                // The write failed...
+                    dialog.modal('hide');
+                    bootbox.alert(error)
+                });
+                // dialog.modal('hide');
+
+            });
+            // set(ref(database, 'reports/' + selectedReportToUpdate), {
+            //     username: name,
+            //     email: email,
+            //     profile_picture : imageUrl
+            // });
+        }
+
+        function getSelectedTimestamp() {
+            const selectedDate = datePicker._flatpickr.selectedDates[0]; // Get selected date
+            if (selectedDate) {
+                const timestamp = selectedDate.getTime(); // Convert selected date to timestamp (in milliseconds)
+                console.log('Selected Date:', selectedDate);
+                console.log('Timestamp:', timestamp);
+                return timestamp;
+                // You can use 'timestamp' as needed in your application
+            } else {
+                return null
+            }
+        }
+
+        function updateSelectedReports() {
+            selectedReports = [];
+            $('.report-checkbox:checked').each(function() {
+                selectedReports.push($(this).val());
+            });
+
+            console.log(selectedReports);
+        }
+
+        function confirmDelete(){
+            if(selectedReports.length == 0){
+                bootbox.alert(`Please select report(s) to delete!`);
+                return;
+            }
+
+            
+            bootbox.confirm(`Are you sure you want to delete the selected (${selectedReports.length}) reports?`,
+            function(result) {
+                if(result){
+                    let dialog = bootbox.dialog({
+                        message: '<p class="text-center mb-0"><i class="fas fa-spin fa-cog"></i> Deleting report(s)...</p>',
+                            closeButton: false
+                        }).on('shown.bs.modal', async function(){
+                            console.log(selectedReports);
+
+                            const updates = {};
+                            for(var i=0; i < selectedReports.length; i++){
+                                updates['/reports/' + selectedReports[i]] = null;
+                            }
+
+                            update(ref(database), updates)
+                            .then(() => {
+                            // Data saved successfully!
+                                dialog.modal('hide');
+                                bootbox.alert('Report(s) has been deleted successfully', function() {
+                                    location.reload();
+                                })
+                            })
+                            .catch((error) => {
+                            // The write failed...
+                                dialog.modal('hide');
+                                bootbox.alert(error)
+                            });
+                            
+                        });
+
+                        
+                    
+                }
+            
+            });
+        }
+
+        function populateForm(dataObject) {
+            document.getElementById('previewImage').src = dataObject.image;
+
+            const dateTimePicker = flatpickr('.datepicker', {
+                enableTime: true,
+                dateFormat: 'Y-m-d H:i', // Modify the format according to your needs
+                defaultDate: new Date(dataObject.dateTime),
+            });
+
+            document.getElementById('dateTime').value = dateTimePicker.formatDate(new Date(dataObject.dateTime), 'Y-m-d H:i');
+            document.getElementById('helmet').value = dataObject.helmet.toString();
+            document.getElementById('helmetType').value = dataObject.helmet_type;
+            document.getElementById('location').value = dataObject.location;
+            document.getElementById('numMotorcyclists').value = dataObject.number_of_motorcyclist_detected;
+            document.getElementById('plateNumber').value = dataObject.plate_number;
+            document.getElementById('violations').value = dataObject.violations;
+            // Set other fields similarly...
+        }
+
+        // Call the function to populate the form
+        
+    </script>
+{% else %}
 <script>
     const lightGalleryDiv = document.getElementById('lightgallery');
 
@@ -104,5 +467,6 @@
         // Add more options as needed
     });
 </script>
+{% endif %}
 
 {% endblock %}

@@ -1,0 +1,139 @@
+{% extends "helmdectpages/base.html" %}
+{% load filters %}
+
+{% block css %}
+<link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" type="text/css"
+    href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/css/lightgallery-bundle.min.css"
+    integrity="sha512-nUqPe0+ak577sKSMThGcKJauRI7ENhKC2FQAOOmdyCYSrUh0GnwLsZNYqwilpMmplN+3nO3zso8CWUgu33BDag=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .folder-icon {
+        cursor: pointer;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+<section class="py-5 mt-5">
+    <div class="container py-5">
+        <div class="row mb-5">
+            <div class="col-md-8 col-xl-6">
+                <h3 class="display-6 fw-bold pb-4 mb-4">Reports:&nbsp;<span
+                        class="underline">Captured Photos</span></h3>
+            </div>
+            <!-- <div class="col">
+                <label for="dateFilter">Date Filter</label>
+                <input type="text" id="dateFilter" class="form-control"
+                    placeholder="Select Date" autocomplete="off">
+            </div> -->
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for date, reports_group in grouped_reports.items %}
+            <div class="col">
+                <div class="folder-icon text-center p-3 border" onclick="redirectToReportHistory('{{ date }}')">
+                    <i class="bi bi-folder-fill"></i>
+                    <p>{{ date|date:'Y-m-d' }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+{% include 'partials/footer.html' %}
+
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/plugins/thumbnail/lg-thumbnail.min.js"
+    integrity="sha512-VBbe8aA3uiK90EUKJnZ4iEs0lKXRhzaAXL8CIHWYReUwULzxkOSxlNixn41OLdX0R1KNP23/s76YPyeRhE6P+Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.2/plugins/zoom/lg-zoom.min.js"
+    integrity="sha512-BLW2Jrofiqm6m7JhkQDIh2olT0EBI58+hIL/AXWvo8gOXKmsNlU6myJyEkTy6rOAAZjn0032FRk8sl9RgXPYIQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    function redirectToReportHistory(date) {
+        const selectedDate = new Date(date);
+        const timezoneOffset = selectedDate.getTimezoneOffset(); // Get timezone offset in minutes
+
+        // Adjust date by subtracting the timezone offset in minutes
+        const adjustedStartDate = new Date(selectedDate.getTime() - (timezoneOffset * 60000));
+
+        // Set the start date to the beginning of the day (00:00 hours)
+        adjustedStartDate.setHours(0, 0, 0, 0);
+
+        // Calculate the end date by adding one day (in milliseconds) to the start date
+        const adjustedEndDate = new Date(adjustedStartDate);
+        adjustedEndDate.setDate(adjustedEndDate.getDate() + 1); // Add one day
+
+        // Set the end date to the end of the same day (23:59 hours)
+        adjustedEndDate.setHours(23, 59, 59, 999);
+
+        // Format dates to YYYY-MM-DD format
+        const formattedStartDate = adjustedStartDate.toISOString().split('T')[0];
+        const formattedEndDate = adjustedEndDate.toISOString().split('T')[0];
+
+        const url = `/report_history/?start_date=${formattedStartDate}&end_date=${formattedEndDate}`;
+        window.location.href = url;
+    }
+
+    // Initialize Flatpickr
+    const dateFilter = document.getElementById('dateFilter');
+    var queryParams = getQueryParams();
+    var defaultDateRange = [];
+    var startDate = queryParams['start_date'];
+    var endDate = queryParams['end_date'];
+
+    // Check if both dates are present in the query parameters
+    if (startDate && endDate) {
+        defaultDateRange = [startDate, endDate];
+    }
+
+    // flatpickr(dateFilter, {
+    //     mode: 'range', // Enable selecting a date range
+    //     dateFormat: 'Y-m-d', // Date format,
+    //     defaultDate: defaultDateRange,
+    //     allowInput: true,
+    //     allowClear: true,
+    //     onClose: function(selectedDates, dateStr) {
+    //         // When the user selects a date range, trigger the view with selected dates
+    //         const [startDate, endDate] = dateStr.split(" to ");
+    //         const url = `/report_history/?start_date=${startDate}&end_date=${endDate}`;
+
+    //         window.location.href = url;
+    //     }
+    // });
+
+    function getQueryParams() {
+        var queryParams = {};
+        var queryString = window.location.search.substring(1);
+        var params = queryString.split("&");
+        for (var i = 0; i < params.length; i++) {
+            var pair = params[i].split("=");
+            queryParams[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+        return queryParams;
+    }
+</script>
+<script>
+    const lightGalleryDiv = document.getElementById('lightgallery');
+
+    lightGallery(lightGalleryDiv, {
+        selector: 'a',
+        thumbnail: true,
+        download: true,
+        margin: 30,
+        zoom: true
+
+        // Add more options as needed
+    });
+</script>
+
+{% endblock %}

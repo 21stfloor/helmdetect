@@ -1,15 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-class CustomUser(AbstractUser):
-    # Remove the username field entirely
-    username = None
+from helmdectpages.managers import CustomUserManager
 
+class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     # Add other fields as needed
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.email

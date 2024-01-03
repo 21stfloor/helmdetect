@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from firebase_admin import storage
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 from .firebase_init import firebase_admin  # Import the firebase initialization
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
@@ -115,7 +115,7 @@ def report_history(request):
     if start_date_param and end_date_param:
         try:
             start_date = datetime.strptime(start_date_param, '%Y-%m-%d')
-            end_date = datetime.strptime(end_date_param, '%Y-%m-%d')
+            end_date = datetime.strptime(end_date_param, '%Y-%m-%d') + timedelta(days=1)  # Add one day to include the end date
             
             filtered_reports = {}
             if reports:
@@ -126,13 +126,11 @@ def report_history(request):
                     if isinstance(timestamp, int) and timestamp > 0:
                         try:
                             report_date = datetime.fromtimestamp(timestamp / 1000.0)
-                            if start_date <= report_date <= end_date:
+                            if start_date <= report_date < end_date:  # Check if report_date falls between start_date and end_date
                                 # Check and set default value for helmet_type if missing
                                 if 'helmet_type' not in value:
                                     value['helmet_type'] = 'Unknown'
-                                if 'image' not in value:
-                                    continue
-                                if not value['image'].startswith("http"):
+                                if 'image' not in value or not value['image'].startswith("http"):
                                     continue
                                 filtered_reports[key] = value
                         except (ValueError, OSError) as e:
@@ -144,7 +142,31 @@ def report_history(request):
         except ValueError:
             # Handle the case when dates are not in the correct format
             pass
-            
+    else:
+        # When start_date_param and end_date_param are not set, return a list of dates grouped by report_date
+        grouped_reports = {}
+        if reports:
+            for key, value in reports.items():
+                timestamp = value.get('dateTime', 0)  # Assuming 'dateTime' is the timestamp field
+                
+                # Check if timestamp is valid
+                if isinstance(timestamp, int) and timestamp > 0:
+                    try:
+                        report_date = datetime.fromtimestamp(timestamp / 1000.0).date()
+                        if(report_date.year < 2000):
+                            continue
+                        if report_date not in grouped_reports:
+                            grouped_reports[report_date] = []
+                        grouped_reports[report_date].append(value)
+                    except (ValueError, OSError) as e:
+                        # Handle conversion errors
+                        pass
+        
+        # Sort grouped_reports by report_date
+        grouped_reports = dict(sorted(grouped_reports.items()))
+
+        return render(request, 'helmdectpages/report_grouped_dates.html', {'grouped_reports': grouped_reports})
+
     report_datas = {}
     if reports:
         for key, value in reports.items():
