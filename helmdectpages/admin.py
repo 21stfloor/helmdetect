@@ -1,11 +1,18 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.models import Group
 
 from helmdectpages.models import CustomUser
 
+class CustomUserAdminForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        exclude = ['user_permissions', 'groups','password','username']
+
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    pass
+    readonly_fields = ('last_login', 'email', 'date_joined')
+    form = CustomUserAdminForm
     # readonly_fields = ('id', )
     # list_display = ('email', 'firstname',
     #                 'middlename', 'lastname', 'mobile')

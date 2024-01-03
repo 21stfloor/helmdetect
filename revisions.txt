@@ -1,10 +1,13 @@
-P250 [all pages] convert topnavbar into sidebar
-P100 [all pages] account link on top right corner
-P100 [images page] group captured by album date
-P250 [images page -> album clicked] images pager per entry
-P500 [reports page] downloadable table
+*P100 [images page] group captured by album date
+*P250 [images page -> album clicked] images pager per entry
 *P100 [Login] add admin button
 *P1000 [new admin login form] create admin login
-P200 [images page] delete images
-P500 [images page] configure images
+*P200 [images page] delete images
+*P500 [images page] configure images
+
+
+
+P500 [reports page] downloadable table
+P250 [all pages] convert topnavbar into sidebar
+P100 [all pages] account link on top right corner
 P??? [homepage] livestream, Homepage preview image with bounding box
