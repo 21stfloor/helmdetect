@@ -282,7 +282,7 @@
                 updateSelectedReports();
             });
 
-            $('.report-checkbox').on('change', function() {
+            $('tbody').on('change', '.report-checkbox', function() {
                 if (!this.checked) {
                     $('#checkAllCheckbox').prop('checked', false);
                 } else {
