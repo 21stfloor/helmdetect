@@ -83,6 +83,8 @@ $(document).ready(function() {
           report.helmet_type = 'Unknown';
         }
 
+        report.location = 'Mati City'
+
         reportsData.push(report);
       }
 
@@ -91,6 +93,11 @@ $(document).ready(function() {
       $('#reportsTable').DataTable({
         data: reportsData,
         dom: 'Bfrtip',
+        language: {
+            buttons: {
+                excel: 'Export' // Change the Excel button text to 'Export'
+            }
+        },
         buttons: [
             'excel',
         ],

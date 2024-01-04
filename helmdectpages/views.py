@@ -174,6 +174,7 @@ def report_history(request):
                 continue
             if not value['image'].startswith("http"):
                 continue
+            value['location'] = 'Mati City'
             report_datas[key] = value
 
     # Sort report_datas by dateTime field in descending order (latest first)
@@ -199,7 +200,7 @@ def detailed_reports(request):
     report_data = {
         'motorcyclist_detected': get_database_value("detailed_reports/number_of_motorcyclist_detected"),
         'plate_number': get_database_value("reports/plate_number"),
-        'location': get_database_value("reports/location"),
+        'location': 'Mati City',
         'time': get_database_value("reports/time"),
         'type_of_helmet': get_database_value("reports/type_of_helmet"),
         'color': get_database_value("detailed_reports/color"),
