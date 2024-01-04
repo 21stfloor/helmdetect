@@ -6,7 +6,7 @@ from helmdectpages.managers import CustomUserManager
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     # Add other fields as needed
-
+    username = None
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
