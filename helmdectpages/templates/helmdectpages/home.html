@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-<section class="py-5 mt-5">
+<section class="py-5">
     <div class="container py-5">
     <div class="row mb-0">
         <div class="col-12 mx-auto">
@@ -13,6 +13,19 @@
         <div class="col">
             <div class="d-flex justify-content-center">
                 <img src="{% static 'images/logo_with_text.png' %}" class="img-fluid mx-auto w-25">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container py-1 py-xl-3">
+    <div class="row mb-3">
+        <div class="col-12 mx-auto">
+            <div class="card shadow-lg px-3 mb-5 rounded">
+                <div class="card-body text-center">
+                    <h2 class="card-title display-6 fw-bold mb-4"><br><span
+                            class="underline">Preview</span></h2>
+                    <img src="{% static 'images/sample.jpg' %}" class="img-fluid w-50">
+                </div>
             </div>
         </div>
     </div>
@@ -41,7 +54,7 @@
         </div>
     </div>
 </div>
-<div class="container py-1 py-xl-3">
+<div class="container py-1 py-xl-3 mb-5">
     <div class="row mb-3">
         <div class="col-12 mx-auto">
             <div class="card shadow-lg px-3 mb-5rounded">
@@ -69,6 +82,9 @@
     </div>
 </div>
 </section>
-
+<br>
+<br>
+<br>
+<br>
 {% include 'partials/footer.html' %}
 {% endblock %}

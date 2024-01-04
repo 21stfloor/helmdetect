@@ -1,58 +1,58 @@
 {% load static %}
 <nav
-    class="navbar navbar-expand-md fixed-top navbar-shrink py-3 bg-primary">
-    <div class="container-fluid"><a class="navbar-brand" href="#">
-            <img src="{% static 'images/logo_with_text.png' %}" alt="Bootstrap"
-                width="128" height="32">
-        </a>
+class="navbar fixed-top navbar-shrink py-3 bg-primary ">
+<div class="container-fluid"><a class="navbar-brand" href="#">
+        <img src="{% static 'images/logo_with_text.png' %}" alt="Bootstrap"
+            width="128" height="32">
+    </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navcol-1" aria-controls="navcol-1"
-            aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navcol-1" aria-controls="navcol-1"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <div class="collapse navbar-collapse" id="navcol-1">
-            <ul class="navbar-nav ms-auto d-flex align-items-center">
-                <li class="nav-item mx-3 py-0 my-0">
-                    <a
-                        class="nav-link {% if request.path == '/' %}active rounded{% endif %}"
-                        href="{% url 'home' %}">Home</a>
-                </li>
-                {% if not user.is_authenticated %}
-                <li class="nav-item mx-3 py-0 my-0">
-                    <a
-                        class="nav-link {% if request.path == '/login/' %}active rounded{% endif %}"
-                        href="{% url 'login' %}">Login</a>
-                </li>
-                {% endif %}
-                {% if user.is_authenticated %}
-                <li class="nav-item mx-3 py-0 my-0">
-                    <a
-                        class="nav-link {% if request.path == '/report_history/' %}active rounded{% endif %}"
-                        href="{% url 'report_history' %}">Report History</a>
-                </li>
-                <li class="nav-item mx-3 py-0 my-0">
-                    <a
-                        class="nav-link {% if request.path == '/detailed-reports/' %}active rounded{% endif %}"
-                        href="{% url 'detailed_reports' %}">Detailed Reports</a>
-                </li>
-                <li class="nav-item mx-3 py-0 my-0">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="themeToggle" checked>
-                    <label class="form-check-label" for="themeToggle"><i class="bi bi-highlights"></i></label>
-                  </div>
-                </li>
-                <li class="nav-item mx-3 py-0 my-0">
-                    <a
-                        class="nav-link fs-3 {% if request.path == '/settings/' %}active rounded{% endif %}"
-                        href="{% url 'settings' %}">
-                        <i class="bi bi-person-circle"></i>
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-
+    <div class="collapse navbar-collapse" id="navcol-1">
+        <ul class="navbar-nav ms-auto d-flex align-items-center">
+            <li class="nav-item mx-3 py-0 my-0">
+                <a
+                    class="nav-link {% if request.path == '/' %}active rounded{% endif %}"
+                    href="{% url 'home' %}">Home</a>
+            </li>
+            {% if not user.is_authenticated %}
+            <li class="nav-item mx-3 py-0 my-0">
+                <a
+                    class="nav-link {% if request.path == '/login/' %}active rounded{% endif %}"
+                    href="{% url 'login' %}">Login</a>
+            </li>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <li class="nav-item mx-3 py-0 my-0">
+                <a
+                    class="nav-link {% if request.path == '/report_history/' %}active rounded{% endif %}"
+                    href="{% url 'report_history' %}">Report History</a>
+            </li>
+            <li class="nav-item mx-3 py-0 my-0">
+                <a
+                    class="nav-link {% if request.path == '/detailed-reports/' %}active rounded{% endif %}"
+                    href="{% url 'detailed_reports' %}">Detailed Reports</a>
+            </li>
+            <li class="nav-item mx-3 py-0 my-0">
+            <div class="form-check form-switch">
+                <input class="form-check-input themeToggle" type="checkbox" role="switch" id="themeToggle" checked>
+                <label class="form-check-label" for="themeToggle"><i class="bi bi-highlights"></i></label>
+              </div>
+            </li>
+            <li class="nav-item mx-3 py-0 my-0">
+                <a
+                    class="nav-link fs-3 {% if request.path == '/settings/' %}active rounded{% endif %}"
+                    href="{% url 'settings' %}">
+                    <i class="bi bi-person-circle"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
     </div>
+
+</div>
 </nav>

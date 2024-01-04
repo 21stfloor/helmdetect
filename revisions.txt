@@ -4,10 +4,9 @@
 *P1000 [new admin login form] create admin login
 *P200 [images page] delete images
 *P500 [images page] configure images
+*P250 [all pages] convert topnavbar into sidebar
+*P100 [all pages] account link on top right corner
+*P500 [reports page] downloadable table
 
 
-
-P500 [reports page] downloadable table
-P250 [all pages] convert topnavbar into sidebar
-P100 [all pages] account link on top right corner
 P??? [homepage] livestream, Homepage preview image with bounding box

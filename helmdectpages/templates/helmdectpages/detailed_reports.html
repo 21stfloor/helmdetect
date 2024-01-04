@@ -2,52 +2,63 @@
 
 {% block css %}
 <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+  href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
 <link rel="stylesheet"
     href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet"
-    href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" />    
+    href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" />   
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"/>
 {% endblock %}
 {% block content %}
-<section class="py-5 mt-5">
-    <div class="container py-5">
-        <div class="row mb-5">
-            <div class="col-md-8 col-xl-6 text-center mx-auto">
-                <h2 class="fw-bold"><br><span class="underline pb-2">Detailed
-                        Reports of Violators</span></h2>
-            </div>
-        </div>
-        <div class="table-responsive">
-            <table id="reportsTable" class="table table-striped table-bordered nowrap"  style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Date & Time</th>
-                        <th>Helmet Worn</th>
-                        <th>Type of helmet</th>
-                        <th>Location</th>
-                        <th>Motorcyclists Detected</th>
-                        <th>Plate Number</th>
-                        <th>Violations</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
+<section class="py-4 mt-4 pb-5">
+  <div class="container py-5">
+    <div class="row mb-5">
+      <div class="col-md-8 col-xl-6 text-center mx-auto">
+        <h2 class="fw-bold"><br><span class="underline pb-2">Detailed
+            Reports of Violators</span></h2>
+      </div>
     </div>
+    <div class="table-responsive">
+      <table id="reportsTable" class="table table-striped table-bordered nowrap"
+        style="width:100%">
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>Helmet Worn</th>
+            <th>Type of helmet</th>
+            <th>Location</th>
+            <th>Motorcyclists Detected</th>
+            <th>Plate Number</th>
+            <th>Violations</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 </section>
+<br>
+<br>
+<br>
+<br>
+<br>
 {% include 'partials/footer.html' %}
 {% endblock %}
 
 {% block scripts %}
 <script
-    src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
 <script
     src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script
     src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script
     src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
-    
+
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
 <script>
 $(document).ready(function() {
   $.ajax({
@@ -79,6 +90,10 @@ $(document).ready(function() {
 
       $('#reportsTable').DataTable({
         data: reportsData,
+        dom: 'Bfrtip',
+        buttons: [
+            'excel',
+        ],
         columns: [
           { data: 'dateTime', title: 'Date & Time' },
           { data: 'helmet', title: 'Helmet Worn', render: function (data) {
@@ -88,7 +103,7 @@ $(document).ready(function() {
           { data: 'location', title: 'Location' },
           { data: 'number_of_motorcyclist_detected', title: 'Motorcyclists Detected' },
           { data: 'plate_number', title: 'Plate Number' },
-          { data: 'violations', title: 'Violations' },
+          { data: 'violations', title: 'Violations', defaultContent: 'Unknown' },
         ]
       });
     },

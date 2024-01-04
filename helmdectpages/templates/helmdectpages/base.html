@@ -36,17 +36,100 @@
                     background-image: url("{% static 'images/clouds.png' %}");
                     /* Other background properties */
                     background-size: cover; /* Adjust to your preference */
-                    /* Add more styles as needed */
+                    min-height: 100vh;
+                    min-height: -webkit-fill-available;
                 }
+
+                html {
+                height: -webkit-fill-available;
+                }
+
+                main {
+                height: 100vh;
+                height: -webkit-fill-available;
+                max-height: 100vh;
+                overflow-x: auto;
+                overflow-y: hidden;
+                }
+
+                .dropdown-toggle { outline: 0; }
+
+                .btn-toggle {
+                padding: .25rem .5rem;
+                font-weight: 600;
+                color: var(--bs-emphasis-color);
+                background-color: transparent;
+                }
+                .btn-toggle:hover,
+                .btn-toggle:focus {
+                color: rgba(var(--bs-emphasis-color-rgb), .85);
+                background-color: var(--bs-tertiary-bg);
+                }
+
+                .btn-toggle::before {
+                width: 1.25em;
+                line-height: 0;
+                content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+                transition: transform .35s ease;
+                transform-origin: .5em 50%;
+                }
+
+                [data-bs-theme="dark"] .btn-toggle::before {
+                content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%28255,255,255,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+                }
+
+                .btn-toggle[aria-expanded="true"] {
+                color: rgba(var(--bs-emphasis-color-rgb), .85);
+                }
+                .btn-toggle[aria-expanded="true"]::before {
+                transform: rotate(90deg);
+                }
+
+                .btn-toggle-nav a {
+                padding: .1875rem .5rem;
+                margin-top: .125rem;
+                margin-left: 1.25rem;
+                }
+                .btn-toggle-nav a:hover,
+                .btn-toggle-nav a:focus {
+                background-color: var(--bs-tertiary-bg);
+                }
+
+                .scrollarea {
+                overflow-y: auto;
+                }
+
             </style>
         {% block css %}
         {% endblock %}
     </head>
-    <body class="pb-5 mb-5">
-        {% include 'partials/navbar.html' %}
-        {% block content %}
-
-        {% endblock %}
+    <body class="mb-5 h-100">
+        <div class="container-fluid vh-100 position-relative">
+            {% if user.is_authenticated %}
+            <div class="row d-none d-md-flex justify-content-end pe-3">
+                <a class="fs-3 {% if request.path == '/settings/' %}active rounded{% endif %} text-black"
+                    href="{% url 'settings' %}">
+                    <i class="bi bi-person-circle float-end fs-5">{{ user.email }}</i>
+                </a>
+            </div>
+            {% endif %}
+            <div class="row d-md-none">
+                <div class="col">
+                    {% include 'partials/navbar.html' %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2 p-0 d-none d-md-block position-fixed top-0 bottom-0 start-0">
+                    {% include 'partials/sidebar.html' %}
+                </div>
+                <div class="col offset-md-2 h-100 overflow-auto">
+                    {% block content %}
+                    <!-- Your main content -->
+                    {% endblock %}
+                </div>
+            </div> 
+        </div>
+    
         <script
             src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
             integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
@@ -65,7 +148,6 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
         <script>
-                const themeToggleBtn = document.getElementById('themeToggle');
                 const htmlTag = document.documentElement;
           
                 // Check local storage for the theme setting
@@ -75,7 +157,7 @@
                   htmlTag.setAttribute('data-bs-theme', savedTheme);
                 }
           
-                themeToggleBtn.addEventListener('click', function() {
+                $('.themeToggle').on('click', function() {
                   // Toggle theme
                   const currentTheme = htmlTag.getAttribute('data-bs-theme');
                   const newTheme = currentTheme === 'light' ? 'dark' : 'light';
@@ -85,12 +167,12 @@
                   // Save the theme setting to local storage
                   localStorage.setItem('theme', newTheme);
                   if(newTheme == 'dark'){
-                    $('.navbar').removeClass('bg-primary');
-                    $('.navbar').addClass('bg-primary-subtle');
+                    $('.sidebar, .navbar').removeClass('bg-primary');
+                    $('.sidebar, .navbar').addClass('bg-primary-subtle');
                   }
                   else{
-                    $('.navbar').removeClass('bg-primary-subtle');
-                    $('.navbar').addClass('bg-primary');                    
+                    $('.sidebar, .navbar').removeClass('bg-primary-subtle');
+                    $('.sidebar, .navbar').addClass('bg-primary');                    
                   }
                 });
               </script>

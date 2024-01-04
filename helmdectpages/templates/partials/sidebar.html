@@ -1,0 +1,38 @@
+{% load static %}
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-primary sidebar vh-100">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <img src="{% static 'images/logo_with_text.png' %}" alt="Bootstrap" width="128" height="32">
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li class="nav-item">        
+            <a class="nav-link {% if request.path == '/' %}active rounded{% endif %}" href="{% url 'home' %}">
+                Home</a>
+        </li>
+        {% if not user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/login/' %}active rounded{% endif %}" href="{% url 'login' %}">Login</a>
+        </li>
+        {% endif %}
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/report_history/' %}active rounded{% endif %}" href="{% url 'report_history' %}">Images</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/detailed-reports/' %}active rounded{% endif %}" href="{% url 'detailed_reports' %}">Reports</a>
+        </li>
+        <li class="nav-item">
+            <div class="form-check form-switch">
+                <input class="form-check-input themeToggle" type="checkbox" role="switch" id="themeToggle" checked>
+                <label class="form-check-label" for="themeToggle"><i class="bi bi-highlights"></i></label>
+            </div>
+        </li>
+        <!-- <li class="nav-item">
+            <a class="nav-link fs-3 {% if request.path == '/settings/' %}active rounded{% endif %}" href="{% url 'settings' %}">
+                <i class="bi bi-person-circle"></i>
+            </a>
+        </li> -->
+        {% endif %}
+    </ul>
+  </div>
+
