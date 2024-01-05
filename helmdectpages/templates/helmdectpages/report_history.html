@@ -318,7 +318,7 @@
 
             let motorcyclist = parseInt($('#numMotorcyclists').val());
 
-            if(isNaN(motorcyclist) || motorcyclist <= 0){
+            if(isNaN(motorcyclist) || motorcyclist < 0){
                 bootbox.alert('Please select a motorcyclist count!');
                 return;
             }
