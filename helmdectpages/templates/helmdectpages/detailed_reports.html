@@ -67,10 +67,18 @@ $(document).ready(function() {
     success: function(data) {
       const reportsData = [];
       for (const key in data) {
+        
         const report = data[key];
         report.id = key;
 
+        if(!report.hasOwnProperty('passed') || report.passed == false){
+          continue;
+        }
         let date = new Date(report.dateTime);
+
+        if(date.getFullYear() < 2000){
+          continue;
+        }
 
         // Format the date and time
         let formattedDateTime = date.toLocaleString();

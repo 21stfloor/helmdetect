@@ -127,9 +127,11 @@ def report_history(request):
                         try:
                             report_date = datetime.fromtimestamp(timestamp / 1000.0)
                             if start_date <= report_date < end_date:  # Check if report_date falls between start_date and end_date
-                                # Check and set default value for helmet_type if missing
-                                if 'helmet_type' not in value:
-                                    value['helmet_type'] = 'Unknown'
+                                if 'passed' not in value or value['passed'] == False:
+                                    continue
+                                # Check and set default value for helmet_type if missing                                
+                                # if 'helmet_type' not in value:
+                                #     value['helmet_type'] = 'Unknown'
                                 if 'image' not in value or not value['image'].startswith("http"):
                                     continue
                                 filtered_reports[key] = value
@@ -147,6 +149,9 @@ def report_history(request):
         grouped_reports = {}
         if reports:
             for key, value in reports.items():
+                passed = value.get('passed', False)
+                if passed == False:
+                    continue
                 timestamp = value.get('dateTime', 0)  # Assuming 'dateTime' is the timestamp field
                 
                 # Check if timestamp is valid
@@ -186,30 +191,8 @@ def report_history(request):
 
 @login_required
 def detailed_reports(request):
-    report_fields = {
-        "number_of_motorcyclist_detected": "1",
-        "color": "Red",
-        "texture": "Smooth",
-        "proper_usage": "Yes",
-        "violations": "None"
-    }
     
-    for field, value in report_fields.items():
-        set_database_value(f"detailed_reports/{field}", value)
-    
-    report_data = {
-        'motorcyclist_detected': get_database_value("detailed_reports/number_of_motorcyclist_detected"),
-        'plate_number': get_database_value("reports/plate_number"),
-        'location': 'Mati City',
-        'time': get_database_value("reports/time"),
-        'type_of_helmet': get_database_value("reports/type_of_helmet"),
-        'color': get_database_value("detailed_reports/color"),
-        'texture': get_database_value("detailed_reports/texture"),
-        'proper_usage': get_database_value("detailed_reports/proper_usage"),
-        'violations': get_database_value("detailed_reports/violations")
-    }
-    
-    return render(request, 'helmdectpages/detailed_reports.html', report_data)
+    return render(request, 'helmdectpages/detailed_reports.html')
 
 @login_required
 def settings(request):

@@ -19,9 +19,8 @@
                                 <p class="text-danger">{{ error }}</p>
                                 {% endfor %}
                             </div>
+                            
                             <button type="submit" class="btn btn-primary">Login</button>
-                        </form>
-
                         <div class="row">
                             <div class="col">
                                 <p>Don't have an account? <a
@@ -35,7 +34,7 @@
                                         href="{% url 'admin:login' %}"> here</a></p>
                             </div>
                         </div>
-
+                        
                         <div class="row">
                             <div class="col">
                                 <div
@@ -99,6 +98,8 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        </form>
                     </div>
                 </div>
             </div>

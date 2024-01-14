@@ -1,0 +1,25 @@
+1000 - latest image capture in home page with bounding box
+
+[Not implemented]100 - captured image description in right side
+[Not implemented]200 - thumbnail at the bottom
+
+Free - remove delete button in non admin user
+
+100 - about us separate page
+Free - footer adjust to smaller height
+
+Dont detect/record Non violators
+
+
+Free - Type of Helmet:
+
+Turtle Helmet
+Cycling Helmet
+Hard Hat Helmet
+
+Not Wearing Helmet
+
+
+
+No Helmet   (sa mga walang helmet)
+No Prescribed Helmet (dun sa mga type of helmet na nadedetect)
