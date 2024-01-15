@@ -28,7 +28,7 @@
             <th>Type of helmet</th>
             <th>Location</th>
             <th>Motorcyclists Detected</th>
-            <th>Plate Number</th>
+            <!-- <th>Plate Number</th> -->
             <th>Violations</th>
           </tr>
         </thead>
@@ -117,7 +117,17 @@ $(document).ready(function() {
           { data: 'helmet_type', title: 'Helmet Type' },
           { data: 'location', title: 'Location' },
           { data: 'number_of_motorcyclist_detected', title: 'Motorcyclists Detected' },
-          { data: 'plate_number', title: 'Plate Number' },
+          // {
+          //   data: 'plate_number',
+          //   title: 'Plate Number',
+          //   render: function (data, type, row) {
+          //       if (type === 'display') {
+          //           // Assuming data is a base64-encoded image
+          //           return '<a href="' + data + '" target="_blank">View Image</a>';
+          //       }
+          //       return data;
+          //   }
+          // },
           { data: 'violations', title: 'Violations', defaultContent: 'Unknown' },
         ]
       });
