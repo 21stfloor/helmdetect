@@ -4,7 +4,7 @@
         <li class="{% if request.path == '/' %}current{% endif %}">
             <a
                 
-                href="{% url 'home' %}">Home</a>
+                href="{% url 'home' %}">Helmet detection</a>
         </li>
         {% if not user.is_authenticated %}
         <li class="{% if request.path == '/login/' %}current{% endif %}">
@@ -17,12 +17,12 @@
         <li class="{% if request.path == '/report_history/' %}current{% endif %}">
             <a
                 
-                href="{% url 'report_history' %}">Report History</a>
+                href="{% url 'report_history' %}">Captured</a>
         </li>
         <li class="{% if request.path == '/detailed-reports/' %}current{% endif %}">
             <a
                 
-                href="{% url 'detailed_reports' %}">Detailed Reports</a>
+                href="{% url 'detailed_reports' %}">Reports</a>
         </li>
         <li class="{% if request.path == '/about/' %}current{% endif %}">
             <a
@@ -64,7 +64,7 @@ class="navbar fixed-top navbar-shrink py-3 bg-white d-lg-none">
         <ul class="navbar-nav ms-auto d-flex align-items-center">
             <li class="{% if request.path == '/' %}current{% endif %}">
                 <a
-                    href="{% url 'home' %}">Home</a>
+                    href="{% url 'home' %}">Helmet detection</a>
             </li>
             {% if not user.is_authenticated %}
             <li class="{% if request.path == '/login/' %}current{% endif %}">
@@ -77,12 +77,12 @@ class="navbar fixed-top navbar-shrink py-3 bg-white d-lg-none">
             <li class="{% if request.path == '/report_history/' %}current{% endif %}">
                 <a
                     
-                    href="{% url 'report_history' %}">Report History</a>
+                    href="{% url 'report_history' %}">Captured</a>
             </li>
             <li class="{% if request.path == '/detailed-reports/' %}current{% endif %}">
                 <a
                     
-                    href="{% url 'detailed_reports' %}">Detailed Reports</a>
+                    href="{% url 'detailed_reports' %}">Reports</a>
             </li>
             <li class="{% if request.path == '/about/' %}current{% endif %}">
                 <a
