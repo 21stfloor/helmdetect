@@ -74,6 +74,7 @@
             {% with value.dateTime|timestamp_to_datetime as readable_datetime %}
             <a data-bs-toggle="modal" 
             data-bs-target="#exampleModal"
+                data-documentId="{{ key }}"
                 data-sub-html="<p>Date Time: {{ readable_datetime }}</p><p>Location: {{ value.location }}</p><p>Plate Number: <img src='{{ value.plate_number }}' alt='No plate number detected'/></p><p>Helmet Type: {{ value.helmet_type }}</p><p>Violations: {{ value.violations }}</p>">
                 <img src="{{ value.image }}" class="img-fluid w-25" alt="Image">
             </a>
@@ -490,6 +491,8 @@
     $(document).ready(function(){
         $('#exampleModal').on('shown.bs.modal', function (event) {
             let trigger = event.relatedTarget;
+
+            console.log($(trigger).attr('data-documentId'));
             console.log(trigger);
 
             $('#reportDescription').empty();
@@ -498,6 +501,8 @@
             let src = $(trigger).find('img').attr('src');
 
             $('#reportImage').attr('src', src);
+
+            
         });
     });
     

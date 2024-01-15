@@ -51,6 +51,9 @@
                         <!-- <canvas id="canvas"></canvas> -->
                       <!-- </div> -->
                 </div>
+                <div class="card-footer">
+                    
+                </div>
             </div>
         </div>
     </div>
@@ -62,4 +65,39 @@
 <br>
 <br>
 {% include 'partials/footer.html' %}
+
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set, get, child, update, orderByChild, limitToLast, equalTo, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+  
+    const firebaseConfig = {
+      apiKey: "AIzaSyC_LnkCUL0Y9Guy6eciK7ilk8AFMxNg5Qo",
+      authDomain: "helmdetect.firebaseapp.com",
+      databaseURL: "https://helmdetect-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "helmdetect",
+      storageBucket: "helmdetect.appspot.com",
+      messagingSenderId: "545814528226",
+      appId: "1:545814528226:web:7f3e941dff5e8d42df1ebb"
+    };
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const storage = getStorage();
+
+    const recentReportRef = ref(database, 'preview');
+
+    get(recentReportRef).then((snapshot) => {
+    if (snapshot.exists()) {
+        let value = snapshot.val();
+        console.log(value);
+
+        $('.card-footer').append(`<p>Location: Mati City</p><p>Plate Number: <img src='${ value.plate_number }' alt='No plate number detected'/></p><p>Helmet Type: ${ value.helmet_type }</p><p>Violations: ${ value.violations }</p>`);
+    }
+  });
+
+</script>
+
 {% endblock %}
