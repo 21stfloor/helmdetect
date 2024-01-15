@@ -494,7 +494,7 @@
 
             $('#reportDescription').empty();
 
-            $('#reportDescription').append($(trigger).attr('data-sub-html'));
+            $('#reportDescription').append(`<div class="fs-1">${$(trigger).attr('data-sub-html')}</div>`);
             let src = $(trigger).find('img').attr('src');
 
             $('#reportImage').attr('src', src);
