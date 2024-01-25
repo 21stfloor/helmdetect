@@ -1,9 +1,9 @@
 {
-    "apiKey": "AIzaSyC_LnkCUL0Y9Guy6eciK7ilk8AFMxNg5Qo",
-    "authDomain": "helmdetect.firebaseapp.com",
-    "databaseURL": "https://helmdetect-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "projectId": "helmdetect",
-    "storageBucket": "helmdetect.appspot.com",
-    "messagingSenderId": "545814528226",
-    "appId": "1:545814528226:web:7f3e941dff5e8d42df1ebb"
-}
+    "apiKey": "AIzaSyCzRcnLmrsCyczpTZ-0vTpIwcPilBNNBms",
+    "authDomain": "helmetdetect2.firebaseapp.com",
+    "databaseURL": "https://helmetdetect2-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "projectId": "helmetdetect2",
+    "storageBucket": "helmetdetect2.appspot.com",
+    "messagingSenderId": "923550243445",
+    "appId": "1:923550243445:web:dcef12e0affd750311363c"
+  }

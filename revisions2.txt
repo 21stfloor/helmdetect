@@ -1,6 +1,7 @@
 1000 - latest image capture in home page with bounding box
+1000 - platenumber image detection
 
-[Not implemented]100 - captured image description in right side
+100 - captured image description in right side
 [Not implemented]200 - thumbnail at the bottom
 
 Free - remove delete button in non admin user
