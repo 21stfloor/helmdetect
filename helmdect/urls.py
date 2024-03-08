@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('', views.StreamView.as_view(), name='home'),
     # path('test-firebase/', views.test_database, name='test_firebase'),
     path('login/', views.MyLoginView.as_view(), name='login'),
     path('register/', views.register, name='register'),
@@ -33,5 +33,7 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('change-password/', views.change_password, name='change_password'),
     path('upload-image/', views.UploadImageView.as_view(), name='upload_image'),
-    path('about/', views.about, name='about')
+    path('about/', views.about, name='about'), 
+    # path('video/', views.StreamView.as_view(), name='stream'),
+    path('transmition/', views.transmition, name='transmition'),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

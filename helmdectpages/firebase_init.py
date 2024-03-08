@@ -11,5 +11,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 cred = credentials.Certificate(os.path.join(BASE_DIR, 'helmetdetect2-firebase-adminsdk-r98rq-7b231713df.json'))  # Replace with your service account key path
 firebase_admin.initialize_app(cred, {
-    'storageBucket': 'helmdetect.appspot.com'  # Replace with your Firebase Storage bucket URL
+    'databaseURL':  'https://helmetdetect2-default-rtdb.asia-southeast1.firebasedatabase.app',
+    'storageBucket': 'helmetdetect2.appspot.com'  # Replace with your Firebase Storage bucket URL
 })

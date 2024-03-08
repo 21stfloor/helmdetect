@@ -1,0 +1,23 @@
+{% extends "helmdectpages/base.html" %}
+{% load static %}
+{% block css %}
+
+{% endblock %}
+{% block content %}
+
+<section class="py-5">
+  <div class="container py-1 py-xl-3">
+    <div class="row mb-3">
+        <h1>RTSP Stream</h1>
+        <img src="{% url 'transmition' %}">
+    </div>
+</div>
+
+</section>
+<br>
+<br>
+<br>
+<br>
+{% include 'partials/footer.html' %}
+
+{% endblock %}
