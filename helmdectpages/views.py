@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from firebase_admin import storage
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from .firebase_init import firebase_admin  # Import the firebase initialization
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
@@ -35,6 +35,11 @@ from PIL import Image
 from firebase_admin import credentials, storage, db
 import json
 from skimage.metrics import structural_similarity
+
+config = FIREBASE_CONFIG
+firebase = pyrebase.initialize_app(config)
+database = firebase.database()
+
 
 # Initialize Firebase Realtime Database
 # cred = credentials.Certificate('helmetdetect2-firebase-adminsdk-r98rq-7b231713df.json')  # Replace with your service account key
@@ -173,11 +178,14 @@ def report_history(request):
                     continue
                 timestamp = value.get('dateTime', 0)  # Assuming 'dateTime' is the timestamp field
                 
+                instance = isinstance(timestamp, int)
+                
                 # Check if timestamp is valid
-                if isinstance(timestamp, int) and timestamp > 0:
+                if instance and timestamp > 0:
                     try:
                         report_date = datetime.fromtimestamp(timestamp / 1000.0).date()
                         if(report_date.year < 2000):
+                            print(f'year < 2000 : {key}')
                             continue
                         if report_date not in grouped_reports:
                             grouped_reports[report_date] = []
@@ -185,7 +193,8 @@ def report_history(request):
                     except (ValueError, OSError) as e:
                         # Handle conversion errors
                         pass
-        
+                else:
+                    print(key)
         # Sort grouped_reports by report_date
         grouped_reports = dict(sorted(grouped_reports.items()))
 
@@ -228,6 +237,7 @@ def transmition(request):
         return HttpResponseServerError(e)
     # return render(request, 'stream.html')
 
+
 def video_stream(request):
     # Path to your video file
     video_path = os.path.join(STATIC_ROOT, '1103131475-preview.mp4')
@@ -248,9 +258,12 @@ def video_stream(request):
 
     model_path = os.path.join(STATIC_ROOT, 'best.pt')
     model = YOLO(model_path)
+    last_processed_time = None  # Initialize last_processed_time outside the loop
+    
 
     # Loop through the frames
     while True:
+        start_time = time.time()
         ret, frame = video.read()
 
         # Check if frame is read correctly
@@ -266,7 +279,51 @@ def video_stream(request):
         pil_image = Image.fromarray(rgb_frame)
         results = model.predict(source=pil_image, save=False, imgsz=320, conf=0.1, stream=True, show_labels=True, show_boxes=True, show_conf=True)
         
+        bounding_box_data = []
+        rider_found = False
+        classes = []
+        plate_box = {}
+        plate_found = False
+
+        # Calculate the elapsed time since the last frame processing
+        if last_processed_time is not None:
+            elapsed_time = time.time() - last_processed_time
+        else:
+            elapsed_time = None
+
+        rider_count = 0
+        violations = ''
+
         for result in results:
+            boxes = result.boxes
+            for idx in range(len(boxes)):
+                box = boxes.data[idx]
+                class_id = int(box[-1])
+                class_name = model.names[class_id]
+                classes.append(class_name)
+
+                if class_name == 'rider':
+                    rider_found = True
+                    rider_count += 1
+
+                if class_name == 'nohelmet' and violations.find("No helmet") == -1:
+                    violations += ' No helmet'
+                # Extracting the bounding box coordinates and format
+                xyxy = boxes.xyxy[idx]
+                x1, y1, x2, y2 = xyxy[0], xyxy[1], xyxy[2], xyxy[3]
+                width, height = x2 - x1, y2 - y1
+
+                box_data = {
+                    'class': class_name,
+                    'x': float(x1), 'y': float(y1),
+                    'width': float(width), 'height': float(height)
+                }
+
+                plate_found = class_name == 'plate'
+                if plate_found:
+                    plate_box = xyxy
+                # Convert Tensor data to Python types for serialization
+                bounding_box_data.append(box_data)
             im_array = result.plot()  # plot a BGR numpy array of predictions
 
             img = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
@@ -277,8 +334,62 @@ def video_stream(request):
 
             _, jpeg = cv2.imencode('.jpg', img_array_bgr)
 
+            
         
+            if rider_found and (elapsed_time is None or elapsed_time > 8):
 
+                # if are_images_same(previous_frame, img_array):
+                #     print('skipping same image')
+                #     continue
+                # previous_frame = img_array
+
+                # Convert color space from RGB to BGR
+                img_array_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
+
+                # Encode the numpy array
+                ret, jpeg = cv2.imencode('.jpg', img_array_bgr)
+
+                if not ret:
+                    continue
+                
+                # Convert the JPEG frame buffer to base64
+                base64_string = base64.b64encode(jpeg).decode('utf-8')
+                upload_url = upload_base64_image(base64_string)
+                if upload_url is None:
+                    continue
+                # current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                current_timestamp = int(datetime.now().timestamp() * 1000)
+                json_data = {
+                    "dateTime": current_timestamp,
+                    "image": upload_url,
+                    "location": 'Mati City',
+                    "violations": violations,
+                    "passed": True,
+                    "number_of_motorcyclist_detected": rider_count
+                }
+                print(json_data)
+                # Save bounding box data to Firebase Realtime Database
+                new_post_ref = ref.push()
+                document_id = new_post_ref.key
+                new_post_ref.set(json_data)
+
+                if plate_found:
+                    plate_img_array = frame[int(plate_box[1]):int(plate_box[3]), int(plate_box[0]):int(plate_box[2])]  # Extract plate image
+                    plate_img = Image.fromarray(plate_img_array[..., ::-1])  # RGB PIL image
+                    plate_img_array_bgr = cv2.cvtColor(np.asarray(plate_img), cv2.COLOR_RGB2BGR)
+
+                    plate_upload_url = upload_base64_image(base64.b64encode(cv2.imencode('.jpg', plate_img_array_bgr)[1]).decode('utf-8'))
+                    
+                    if plate_upload_url is not None:
+                        plate_json_data = {
+                            "plate_number": plate_upload_url
+                        }
+                        print(plate_json_data)
+                        # Save plate data to Firebase Realtime Database
+                        plate_new_post_ref = ref.child(document_id)
+                        plate_new_post_ref.update(plate_json_data)
+
+                last_processed_time = time.time()
         # Send the frame to the template
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n')
@@ -304,9 +415,11 @@ class VideoCamera(object):
         self.previous_bytes = None
         # self.video = cv2.VideoCapture(self.sample_video_path)
         self.video = cv2.VideoCapture(
-            "rtsp://0.tcp.ap.ngrok.io:19835/mjpeg/1")
+            "rtsp://0.tcp.ap.ngrok.io:18362/mjpeg/1")
         (self.grabbed, self.frame) = self.video.read()
         threading.Thread(target=self.update, args=()).start()
+        self.last_processed_time = None  # Initialize last_processed_time outside the loop
+        self.start_time = time.time()
 
     def __del__(self):
         self.video.release()
@@ -320,6 +433,7 @@ class VideoCamera(object):
         # Create a PIL Image from the RGB frame array
         pil_image = Image.fromarray(rgb_frame)
         # test_path = os.path.join(STATIC_ROOT, 'download.jpg')
+        # results = self.model.predict(save=True, stream_buffer=True, source="rtsp://0.tcp.ap.ngrok.io:14613/mjpeg/1", imgsz=320, conf=0.1, stream=True, show_labels=True, show_boxes=True, show_conf=True)
         results = self.model.predict(stream_buffer=True, source=pil_image, save=False, imgsz=320, conf=0.1, stream=True, show_labels=True, show_boxes=True, show_conf=True)
         # results = self.model(source=self.sample_video_path, stream=True, stream_buffer=True)
         # img = image
@@ -327,9 +441,16 @@ class VideoCamera(object):
         bounding_box_data = []
         rider_found = False
         classes = []
+        plate_box = {}
+        plate_found = False
+        rider_count = 0
+        jpeg = None
+        violations = ''   
 
-
-        jpeg = None        
+        if self.last_processed_time is not None:
+            elapsed_time = time.time() - self.last_processed_time
+        else:
+            elapsed_time = None
 
         for result in results:
             boxes = result.boxes
@@ -341,17 +462,25 @@ class VideoCamera(object):
 
                 if class_name == 'rider':
                     rider_found = True
+                    rider_count += 1
+                if class_name == 'nohelmet' and violations.find("No helmet") == -1:
+                    violations += ' No helmet'
                 # Extracting the bounding box coordinates and format
                 xyxy = boxes.xyxy[idx]
                 x1, y1, x2, y2 = xyxy[0], xyxy[1], xyxy[2], xyxy[3]
                 width, height = x2 - x1, y2 - y1
 
-                # Convert Tensor data to Python types for serialization
-                bounding_box_data.append({
+                box_data = {
                     'class': class_name,
                     'x': float(x1), 'y': float(y1),
                     'width': float(width), 'height': float(height)
-                })
+                }
+
+                plate_found = class_name == 'plate'
+                if plate_found:
+                    plate_box = xyxy
+                # Convert Tensor data to Python types for serialization
+                bounding_box_data.append(box_data)
             im_array = result.plot()  # plot a BGR numpy array of predictions
 
             img = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
@@ -363,22 +492,14 @@ class VideoCamera(object):
             _, jpeg = cv2.imencode('.jpg', img_array_bgr)
 
             # print(classes)
-            violations = ''
-            if rider_found:
-                
-                
-
-                if are_images_same(self.previous_frame, img_array):
-                    print('skipping same image')
-                    continue
-                self.previous_frame = img_array
+            
+            if rider_found and (elapsed_time is None or elapsed_time > 8):
 
                 # Convert color space from RGB to BGR
                 img_array_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
 
                 # Encode the numpy array
                 ret, jpeg = cv2.imencode('.jpg', img_array_bgr)
-                # ret, jpeg = cv2.imencode('.jpg', img)
 
                 if not ret:
                     continue
@@ -388,17 +509,38 @@ class VideoCamera(object):
                 upload_url = upload_base64_image(base64_string)
                 if upload_url is None:
                     continue
-                current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                # current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                current_timestamp = int(datetime.now().timestamp() * 1000)
                 json_data = {
-                    "dateTime": current_datetime,
-                    "image": '',
+                    "dateTime": current_timestamp,
+                    "image": upload_url,
                     "location": 'Mati City',
-                    "violations": violations
+                    "violations": violations,
+                    "passed": True,
+                    "number_of_motorcyclist_detected": rider_count
                 }
                 print(json_data)
                 # Save bounding box data to Firebase Realtime Database
                 new_post_ref = ref.push()
+                document_id = new_post_ref.key
                 new_post_ref.set(json_data)
+
+                if plate_found:
+                    plate_img_array = image[int(plate_box[1]):int(plate_box[3]), int(plate_box[0]):int(plate_box[2])]  # Extract plate image
+                    plate_img = Image.fromarray(plate_img_array[..., ::-1])  # RGB PIL image
+                    plate_img_array_bgr = cv2.cvtColor(np.asarray(plate_img), cv2.COLOR_RGB2BGR)
+
+                    plate_upload_url = upload_base64_image(base64.b64encode(cv2.imencode('.jpg', plate_img_array_bgr)[1]).decode('utf-8'))
+                    
+                    if plate_upload_url is not None:
+                        plate_json_data = {
+                            "plate_number": plate_upload_url
+                        }
+                        print(plate_json_data)
+                        # Save plate data to Firebase Realtime Database
+                        plate_new_post_ref = ref.child(document_id)
+                        plate_new_post_ref.set(plate_json_data)
+                self.last_processed_time = time.time()
                 
         if jpeg is None:
             return b''
@@ -476,9 +618,14 @@ def upload_base64_image(base64_string):
         )
         
         print('File uploaded successfully!')
-        
+
+        # ini_time_for_now = datetime.now(timezone.utc)
+
+        #Set the expiration time
+        # expiration_time = ini_time_for_now + timedelta(minutes = 1) 
+        url = blob.public_url#blob.generate_signed_url(method='GET', expiration=expiration_time)
         # Get the download URL of the uploaded file
-        return blob.generate_signed_url(method='GET')
+        return url
     except Exception as e:
         print(e)
         return None

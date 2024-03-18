@@ -74,6 +74,11 @@ $(document).ready(function() {
         if(!report.hasOwnProperty('passed') || report.passed == false){
           continue;
         }
+
+        if(!report.hasOwnProperty('number_of_motorcyclist_detected')){
+          report['number_of_motorcyclist_detected'] = 1
+        }
+
         let date = new Date(report.dateTime);
 
         if(date.getFullYear() < 2000){
@@ -97,7 +102,8 @@ $(document).ready(function() {
       }
 
       console.log(reportsData);
-
+      
+      var exporting = false;
       $('#reportsTable').DataTable({
         data: reportsData,
         dom: 'Bfrtip',
@@ -112,14 +118,15 @@ $(document).ready(function() {
             // }
         },
         buttons: [
-            {
-              extend: 'excel',
-              text: 'Export',
-              className: 'btn btn-primary',
-              exportOptions: {
-                  columns: 'th:not(.exclude)'
-              }
-            }
+          {
+            extend: 'excel',
+            text: 'Export',
+            exportOptions: { orthogonal: "exportxls" },
+            className: 'btn btn-primary',
+            // exportOptions: {
+            //     columns: 'th:not(.exclude)'
+            // }
+          }
         ],
         columns: [
           { data: 'dateTime', title: 'Date & Time' },
@@ -130,17 +137,34 @@ $(document).ready(function() {
           { data: 'location', title: 'Location' },
           { data: 'number_of_motorcyclist_detected', title: 'Motorcyclists Detected' },
           {
-            data: 'plate_number', title: 'Plate Number', render: function (data) {
-                // Assuming data is a base64-encoded image
-                return '<img src="' + data + '" alt="No Plate Number" height="50" />';
-            }
+            // data: 'plate_number', title: 'Plate Number', render: function (data) {
+            //     // Assuming data is a base64-encoded image
+            //     return '<img src="' + data + '" alt="No Plate Number" height="50" />';
+            // }
+
+            
+            data: 'plate_number',
+            title: 'Plate Number',
+            render: function(data, type, row) {
+              // if (type === "display" || type === "filter") {
+              //   return data + " (" + row.state + ")";
+              // }
+
+              if (type === "exportxls") {
+                return data;
+              }
+                // If type is 'display', render image tag, otherwise render just URL
+                return '<img src="' + data + '" alt="Plate Image" height="50" />';
+            },
+            defaultContent: 'None' 
         },
           { data: 'violations', title: 'Violations', defaultContent: 'Unknown' },
         ],
-        columnDefs: [
-            { targets: [5], className: 'exclude' }
+        //columnDefs: [
+        //    { targets: [5], className: 'plate' },
+            // { targets: 5, orderable: false, searchable: false }
             // Replace 'your-class-name' with the desired class name
-        ]
+        //]
       });
     },
     error: function(error) {
