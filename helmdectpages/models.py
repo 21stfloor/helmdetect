@@ -22,6 +22,9 @@ class FirebaseModel(models.Model):
         db_table = 'helmdectpages_firebase'
         managed = False
         
+
+class VideoConfig(models.Model):
+    url = models.CharField(default='', max_length=256, null=False)
 # class User(models.Model):
 #     email = models.EmailField(max_length=100)
 #     password = models.CharField(max_length=100)

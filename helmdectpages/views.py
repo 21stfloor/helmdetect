@@ -414,8 +414,11 @@ class VideoCamera(object):
         self.previous_frame = None
         self.previous_bytes = None
         # self.video = cv2.VideoCapture(self.sample_video_path)
-        self.video = cv2.VideoCapture(
-            "rtsp://0.tcp.ap.ngrok.io:18362/mjpeg/1")
+        video_config = VideoConfig.objects.first()
+        video_url = video_config.url
+        self.video = cv2.VideoCapture(video_url)
+        # self.video = cv2.VideoCapture(
+        #     "rtsp://0.tcp.ap.ngrok.io:18362/mjpeg/1")
         (self.grabbed, self.frame) = self.video.read()
         threading.Thread(target=self.update, args=()).start()
         self.last_processed_time = None  # Initialize last_processed_time outside the loop
