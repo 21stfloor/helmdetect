@@ -245,6 +245,9 @@ def video_stream(request):
     # Open the video file
     video = cv2.VideoCapture(video_path)
 
+    video.set(cv2.CAP_PROP_FRAME_WIDTH, 160)  # Example width
+    video.set(cv2.CAP_PROP_FRAME_HEIGHT, 120)
+
     # Check if video opened successfully
     if not video.isOpened():
         return HttpResponse("Could not open video file")
@@ -336,7 +339,7 @@ def video_stream(request):
 
             
         
-            if rider_found and (elapsed_time is None or elapsed_time > 8):
+            if rider_found and (elapsed_time is None or elapsed_time > 8) or plate_found:
 
                 # if are_images_same(previous_frame, img_array):
                 #     print('skipping same image')
@@ -374,20 +377,24 @@ def video_stream(request):
                 new_post_ref.set(json_data)
 
                 if plate_found:
-                    plate_img_array = frame[int(plate_box[1]):int(plate_box[3]), int(plate_box[0]):int(plate_box[2])]  # Extract plate image
-                    plate_img = Image.fromarray(plate_img_array[..., ::-1])  # RGB PIL image
-                    plate_img_array_bgr = cv2.cvtColor(np.asarray(plate_img), cv2.COLOR_RGB2BGR)
-
-                    plate_upload_url = upload_base64_image(base64.b64encode(cv2.imencode('.jpg', plate_img_array_bgr)[1]).decode('utf-8'))
-                    
-                    if plate_upload_url is not None:
-                        plate_json_data = {
-                            "plate_number": plate_upload_url
-                        }
-                        print(plate_json_data)
-                        # Save plate data to Firebase Realtime Database
-                        plate_new_post_ref = ref.child(document_id)
-                        plate_new_post_ref.update(plate_json_data)
+                    try:
+                        plate_img_array = frame[int(plate_box[1]):int(plate_box[3]), int(plate_box[0]):int(plate_box[2])]  # Extract plate image
+                        plate_img = Image.fromarray(plate_img_array[..., ::-1])  # RGB PIL image
+                        plate_img_array_bgr = cv2.cvtColor(np.asarray(plate_img), cv2.COLOR_RGB2BGR)
+                        print(f'uploading plate image {document_id}')
+                        plate_upload_url = upload_base64_image(base64.b64encode(cv2.imencode('.jpg', plate_img_array_bgr)[1]).decode('utf-8'), 'plates')
+                        
+                        if plate_upload_url is not None:
+                            plate_json_data = {
+                                "plate_number": plate_upload_url
+                            }
+                            print(plate_json_data)
+                            # Save plate data to Firebase Realtime Database
+                            plate_new_post_ref = ref.child(document_id)
+                            plate_new_post_ref.set(plate_json_data)
+                    except Exception as e:
+                        print(f'error in creating plate image: {e}')
+                        return None
 
                 last_processed_time = time.time()
         # Send the frame to the template
@@ -417,6 +424,8 @@ class VideoCamera(object):
         video_config = VideoConfig.objects.first()
         video_url = video_config.url
         self.video = cv2.VideoCapture(video_url)
+        # self.video.set(cv2.CAP_PROP_FRAME_WIDTH, 320)  # Example width
+        # self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
         # self.video = cv2.VideoCapture(
         #     "rtsp://0.tcp.ap.ngrok.io:18362/mjpeg/1")
         (self.grabbed, self.frame) = self.video.read()
@@ -496,7 +505,7 @@ class VideoCamera(object):
 
             # print(classes)
             
-            if rider_found and (elapsed_time is None or elapsed_time > 8):
+            if rider_found and (elapsed_time is None or elapsed_time > 8) or plate_found:
 
                 # Convert color space from RGB to BGR
                 img_array_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
@@ -529,20 +538,24 @@ class VideoCamera(object):
                 new_post_ref.set(json_data)
 
                 if plate_found:
-                    plate_img_array = image[int(plate_box[1]):int(plate_box[3]), int(plate_box[0]):int(plate_box[2])]  # Extract plate image
-                    plate_img = Image.fromarray(plate_img_array[..., ::-1])  # RGB PIL image
-                    plate_img_array_bgr = cv2.cvtColor(np.asarray(plate_img), cv2.COLOR_RGB2BGR)
-
-                    plate_upload_url = upload_base64_image(base64.b64encode(cv2.imencode('.jpg', plate_img_array_bgr)[1]).decode('utf-8'))
-                    
-                    if plate_upload_url is not None:
-                        plate_json_data = {
-                            "plate_number": plate_upload_url
-                        }
-                        print(plate_json_data)
-                        # Save plate data to Firebase Realtime Database
-                        plate_new_post_ref = ref.child(document_id)
-                        plate_new_post_ref.set(plate_json_data)
+                    try:
+                        plate_img_array = image[int(plate_box[1]):int(plate_box[3]), int(plate_box[0]):int(plate_box[2])]  # Extract plate image
+                        plate_img = Image.fromarray(plate_img_array[..., ::-1])  # RGB PIL image
+                        plate_img_array_bgr = cv2.cvtColor(np.asarray(plate_img), cv2.COLOR_RGB2BGR)
+                        print(f'uploading plate image {document_id}')
+                        plate_upload_url = upload_base64_image(base64.b64encode(cv2.imencode('.jpg', plate_img_array_bgr)[1]).decode('utf-8'), 'plates')
+                        
+                        if plate_upload_url is not None:
+                            plate_json_data = {
+                                "plate_number": plate_upload_url
+                            }
+                            print(plate_json_data)
+                            # Save plate data to Firebase Realtime Database
+                            plate_new_post_ref = ref.child(document_id)
+                            plate_new_post_ref.set(plate_json_data)
+                    except Exception as e:
+                        print(f'error in creating plate image: {e}')
+                        return None
                 self.last_processed_time = time.time()
                 
         if jpeg is None:
@@ -597,7 +610,7 @@ def are_images_same(img1, img2):
 def is_multichannel(image):
     return len(image.shape) == 3 and image.shape[2] > 1
 
-def upload_base64_image(base64_string):
+def upload_base64_image(base64_string, folder='images'):
     try:
         # Decode base64 string to bytes
         image_bytes = base64.b64decode(base64_string)
@@ -605,7 +618,7 @@ def upload_base64_image(base64_string):
         current_datetime = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         current_date = datetime.now().strftime('%Y-%m-%d')
         
-        destination_path = f'images/{current_date}/{current_datetime}.jpg'
+        destination_path = f'{folder}/{current_date}/{current_datetime}.jpg'
         
         # Replace 'bucket' with your Firebase storage bucket reference
         bucket = storage.bucket()
@@ -630,5 +643,5 @@ def upload_base64_image(base64_string):
         # Get the download URL of the uploaded file
         return url
     except Exception as e:
-        print(e)
+        print(f'error in uploading plate image: {e}')
         return None
