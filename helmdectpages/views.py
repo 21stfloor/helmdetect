@@ -552,7 +552,7 @@ class VideoCamera(object):
                             print(plate_json_data)
                             # Save plate data to Firebase Realtime Database
                             plate_new_post_ref = ref.child(document_id)
-                            plate_new_post_ref.set(plate_json_data)
+                            plate_new_post_ref.update(plate_json_data)
                     except Exception as e:
                         print(f'error in creating plate image: {e}')
                         return None
